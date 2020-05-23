@@ -13,7 +13,7 @@ TARGET = VMachine
 
 TGT = tgt/*
 
-OBJS = tgt/vmachine.o tgt/resolver.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/stringType.o tgt/dataType.o
+OBJS = tgt/vmachine.o tgt/resolver.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/stringType.o tgt/dataType.o tgt/byteReader.o
 
 .PHONY : build clean
 
@@ -40,10 +40,13 @@ tgt/endianSwap.o : src/endian/endianSwap.c src/endian/endianSwap.h
 tgt/resolver.o : src/resolver/resolver.c src/resolver/resolver.h
 	$(CC) $(CCFLAGES) $< -o $@
 
+tgt/byteReader.o : src/executor/byteReader.c src/executor/byteReader.h
+	$(CC) $(CCFLAGES) $< -o $@
+
 tgt/vmachine.o : src/runtime/vmachine.c
 	$(CC) $(CCFLAGES) $< -o $@
 
-VMachine : tgt/vmachine.o tgt/resolver.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/stringType.o tgt/dataType.o 
+VMachine : tgt/vmachine.o tgt/resolver.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/stringType.o tgt/dataType.o tgt/byteReader.o
 	$(CC) $(OBJS) -o $@
 
 

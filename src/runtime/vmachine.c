@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "../common/constants.h"
 #include "../common/commonType.h"
 #include "../resolver/resolver.h"
@@ -31,7 +32,9 @@ int main(int argc, char **argv) {
 		ConstPool constPool = classType->constPool[i];
 		if (constPool.type == CONSTANT_Utf8) {
 			ConstUtf8Info *constUtf8Info = (ConstUtf8Info *)constPool.value;
-			printf("%i-> UTF-8Info Value:%s\n", i, constUtf8Info->bytes);	
+			printf("%i-> UTF-8Info Value:%s\n", i, constUtf8Info->bytes);
+			printf("%i-> UTF-8Info Length:%d\n", i, constUtf8Info->length);
+			printf("%i-> UTF-8Info StrLen:%d\n", i, strlen(constUtf8Info->bytes));
 		} else if (constPool.type == CONSTANT_Fieldref) {
 			ConstFieldRefInfo *constFieldRefInfo = (ConstFieldRefInfo *)constPool.value;
 			printf("%i-> FieldRef classIndex:%i\n", i, constFieldRefInfo->classIndex);

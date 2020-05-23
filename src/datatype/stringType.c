@@ -23,32 +23,32 @@ String *createString(char *value) {
 	if (value!=NULL && length>0) {
 		bindFunction(string);
 		string->length = length;
-		string->free = length;
-		string->value = malloc(length*2+1);
+		string->value = malloc(length+1);
 		memcpy(string->value, value, length);
 		string->value[length] = '\0';
 	} else {
 		string->length = 0;
-		string->free = DEFALUT_STRING_SPACE;
-		string->value = malloc(DEFALUT_STRING_SPACE);
+		string->value = malloc(DEFALUT_STRING_SPACE+1);
 		memset(string->value, 0, DEFALUT_STRING_SPACE);
+		string->value[length] = '\0';
 	}
 	return string;
 }
 
 String* createStringWithRange(char *value, int range) {
 	String *string = (String *)malloc(sizeof(String));
-	u32 length = range;
-	if (value!=NULL && length>0) {
-		bindFunction(string);
-		string->length = length;
-		string->free = length;
-		string->value = malloc(length*2+1);
+	if (value!=NULL && range>0) {
+		u32 length = strlen(value);
+		if (range>length) {
+			range = length;
+		}
+	
+		string->length = range;
+		string->value = malloc(length+1);
 		memcpy(string->value, value, length);
 		string->value[length] = '\0';
 	} else {
 		string->length = 0;
-		string->free = DEFALUT_STRING_SPACE;
 		string->value = malloc(DEFALUT_STRING_SPACE);
 		memset(string->value, 0, DEFALUT_STRING_SPACE);
 	}
@@ -86,8 +86,7 @@ static String* subString(String *this, int start, int end) {
 			String *string = (String *)malloc(sizeof(String));
 			bindFunction(string);
 			string->length = end-start;
-			string->free = string->length;
-			string->value = malloc(string->length*2+1);
+			string->value = malloc(string->length+1);
 			memcpy(string->value, this->value+start, string->length);
 			string->value[string->length] = '\0';
 			return string;
@@ -99,26 +98,16 @@ static String* subString(String *this, int start, int end) {
 static String* catString(String *this, String *string) {
 	if (this!=NULL) {
 		if (string!=NULL && string->length>0) {
-			if (this->free>=string->length) {
-				char *dest = this->value+this->length;
-				char *src = string->value;
-				u32 length = string->length;
-				memcpy(dest, src, length);
-				this->free -= string->length;
-				this->length += string->length;
-				return this;
-			} else {
-				u32 totalLength = this->length + string->length;
-				char *newValue = malloc(totalLength*2+1);
-				memcpy(newValue, this->value, this->length);
-				memcpy(newValue+this->length, string->value, string->length);
-				newValue[totalLength] = '\0';
-				free(this->value);
-				this->value = newValue;
-				this->length = totalLength;
-				this->free = totalLength;
-				return this;
-			}
+			u32 totalLength = this->length + string->length;
+			char *newValue = (char *)malloc(totalLength+1);
+			memcpy(newValue, this->value, this->length);
+			memcpy(newValue+this->length, string->value, string->length);
+			newValue[totalLength] = '\0';
+			String *catString = (String *)malloc(sizeof(String));
+			bindFunction(catString);
+			catString->value = newValue;
+			catString->length = totalLength;
+			return catString;
 		}	
 	}
 	return this;

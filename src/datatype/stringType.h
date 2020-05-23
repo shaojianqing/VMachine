@@ -6,8 +6,6 @@ struct String {
 	
 	int length;
 
-	int free;
-
 	char *value;
 
 	u32 (*getLength)(String *this);
