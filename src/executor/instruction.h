@@ -1,5 +1,8 @@
+typedef struct StackFrame StackFrame;
 
-typedef bool (*Processor)(void *);
+typedef bool (*Processor)(StackFrame *frame);
+
+typedef bool (*Fetcher)(ByteReader *reader, StackFrame *frame);
 
 typedef struct CasePair {
 
@@ -33,9 +36,9 @@ typedef struct LookupSwitch {
 
 } LookupSwitch;
 
-typedef struct {
+typedef struct Instruction {
 
-    U1 operateCode;
+    u8 operateCode;
 	   
     char *name;
 
@@ -61,8 +64,10 @@ typedef struct {
 
     Processor processor;
 
+    Fetcher fetcher;
+
     u8 reserve;
 
 } Instruction;
 
-
+Instruction *getInstructionByCode(u8 opercode);

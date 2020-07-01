@@ -1,8 +1,20 @@
 #include <stdio.h>
 #include <string.h>
+
 #include "../common/constants.h"
 #include "../common/commonType.h"
+#include "../datatype/stringType.h"
 #include "../resolver/resolver.h"
+#include "../resolver/class.h"
+
+#include "../executor/slotType.h"
+#include "../executor/localVariable.h"
+#include "../executor/operandStack.h"
+#include "../executor/byteReader.h"
+#include "../executor/stackFrame.h"
+#include "../executor/instruction.h"
+
+#include "vmachine.h"
 
 int main(int argc, char **argv) {
 	
@@ -13,6 +25,31 @@ int main(int argc, char **argv) {
 	
 	char *filename = argv[1];
 	ClassType *classType = loadClassData(filename);
+	Class *class = initializeClass(classType);
+
+	Method *mainMethod = class->findMainMethod(class);
+	StackFrame *stackFrame = createStackFrame(mainMethod);
+	ByteReader *byteReader = createByteReader(mainMethod->codeData, mainMethod->codeLength, 0);
+
+	while(byteReader->pc < byteReader->length) {
+		u8 operCode = byteReader->readByte(byteReader);
+		Instruction *instruction = getInstructionByCode(operCode);
+		instruction->fetcher(byteReader, stackFrame);
+		instruction->processor(stackFrame);
+	}
+
+	printf("ClassName:			%s\n", class->className);
+	printf("SuperName:			%s\n", class->superClassName);
+	printf("InterfaceCount:			%d\n", class->interfaceCount);
+	printf("InterfaceName:			%s\n", class->interfaceNames[0]);
+	printf("FieldCount:			%d\n", class->fieldCount);
+	printf("FieldName:			%s\n", class->fieldList[0].fieldName);
+	printf("FieldDescriptor:		%s\n", class->fieldList[0].descriptor);
+	printf("FieldName:			%s\n", class->methodList[0].methodName);
+	printf("FieldDescriptor:		%s\n", class->methodList[0].descriptor);
+
+	printf("\n\n\n\n");
+
 	printf("Class Magic:					%X\n", classType->magic);
 	printf("Class MinorVersion:				%d\n", classType->minorVersion);
 	printf("Class majorVersion:				%d\n", classType->majorVersion);
@@ -20,10 +57,18 @@ int main(int argc, char **argv) {
 	printf("Class accessFlags:				%d\n", classType->accessFlags);
 	printf("Class thisClass:				%d\n", classType->thisClass);
 	printf("Class superClass:				%d\n", classType->superClass);
-	printf("Class interfaceCount:				%d\n", classType->interfaceCount);
-	printf("Class fieldCount:				%d\n", classType->fieldCount);
-	printf("Class methodCount:				%d\n", classType->methodCount);
-	printf("Class attributeCount:				%d\n", classType->attributeCount);
+	printf("Class interfaceCount:				%d\n", class->interfaceCount);
+	//printf("Class interfaceName:				%s\n", class->interfaceList[0]);
+	printf("Class fieldCount:				%d\n", class->fieldCount);
+	printf("Class methodCount:				%d\n", class->methodCount);
+	printf("Class methodName:			%s\n", class->methodList[1].methodName);
+	printf("Class methodDescriptor:		%s\n", class->methodList[1].descriptor);
+	printf("Class methodAttrbute:		%s\n", class->methodList[1].attributeList[0].attributeName);
+
+	printf("Class attributeCount:				%d\n", class->attributeCount);
+	printf("Class attributeName:				%s\n", class->attributeList[0].attributeName);
+	printf("Class attributeValue:				%d\n", class->attributeList[0].data);
+
 	printf("Start to print UTF-8 String Value!\n\n");
 
 	u16 constPoolCount = classType->constPoolCount;
@@ -91,15 +136,3 @@ int main(int argc, char **argv) {
 		printf("\r\n");			
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,12 @@
-typedef struct SlotData {
+typedef union SlotData {
+		
+	int intValue;
 
-	u32 number;
+	float floatValue;
+
+	long longValue;
+
+	double doubleValue;
 
 	void* reference;
 

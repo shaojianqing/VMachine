@@ -1,9 +1,53 @@
 
+#define ACC_PUBLIC      	0x0001
+#define ACC_PRIVATE     	0x0002
+#define ACC_PROTECTED   	0x0004
+#define ACC_STATIC      	0x0008
+#define ACC_FINAL       	0x0010
+#define ACC_SUPER       	0x0020
+#define ACC_SYNCHRONIZED	0x0020 
+#define ACC_VOLATILE    	0x0040
+#define ACC_BRIDGE      	0x0040
+#define ACC_TRANSLENT   	0x0080
+#define ACC_VARARGS			0x0080 
+#define ACC_NATIVE      	0x0100 
+#define ACC_INTERFACE   	0x0200
+#define ACC_ABSTRACT    	0x0400
+#define ACC_STRICT      	0x0800
+#define ACC_SYNTHETIC   	0x1000
+#define ACC_ANNOTATION  	0x2000
+#define ACC_ENUM        	0x4000
+
 typedef struct Class Class;
 
 typedef struct Field Field;
 
 typedef struct Method Method;
+
+typedef struct Exception Exception;
+
+typedef struct Attribute Attribute;
+
+typedef struct Attribute {
+	
+	char* attributeName;
+
+	u32	attributeLength;
+
+	void *data;
+
+} Attribute;
+
+struct Exception {
+
+	u16 startPc;
+
+    u16 endPc;
+
+    u16 handlerPc;
+
+    u16 catchType;
+};
 
 struct Field {
 
@@ -11,9 +55,13 @@ struct Field {
 
 	u16 accessFlags;
 
-	String methodName;
+	char *fieldName;
 
-	String descriptor;
+	char *descriptor;
+
+	u16 attributeCount;
+
+	Attribute *attributeList;
 
 	u32 constValueIdx;
 
@@ -26,33 +74,53 @@ struct Method {
 
 	u16 accessFlags;
 
-	String methodName;
+	char *methodName;
 
-	String descriptor;
+	char *descriptor;
+
+	u16 attributeCount;
+
+	Attribute *attributeList;
 	
 	u32 maxStackSize;
 
 	u32 maxLocalSize;
 
-	byte *code;
+	u32 codeLength;
+
+	byte *codeData;
+
+	u16 exceptionTableLength;
+
+	Exception *exceptionList;
 };
 
 struct Class {
 
 	u16 accessFlags;
 
-	String className;
+	ConstPool *constPool;
 
-	String superClassName;
+	char *className;
 
-	String *interfaceNames;
+	char *superClassName;
 
-	ConstPool *constantPool;
+	u16 interfaceCount;
+
+	char **interfaceNames;
+
+	u16 fieldCount;
 
 	Field *fieldList;
 
+	u16 methodCount;
+
 	Method *methodList;
 
+	u16 attributeCount;
+
+	Attribute *attributeList;
+	
 	Class *superClass;
 
 	Class *interfaces;
@@ -73,7 +141,13 @@ struct Class {
 
 	bool (*isEnum)(Class *this);
 
-	bool (*isInterface)(Class *this);
+	ConstPool* (*getConstant)(Class *this, u32 index);
+
+	Field* (*findField)(Class *this, char *fieldName);
+
+	Method* (*findMethod)(Class *this, char *methodName, char *descriptor);
+
+	Method* (*findMainMethod)(Class *this);
 };
 
 Class* initializeClass(ClassType *classType);

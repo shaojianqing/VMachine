@@ -9,11 +9,11 @@ struct ByteReader {
 
 	u32 pc;
 
-	u8 (*readByte)(ByteReader *this);
+	byte (*readByte)(ByteReader *this);
 
-	u16 (*readShort)(ByteReader *this);
+	short (*readShort)(ByteReader *this);
 
-	u32 (*readInteger)(ByteReader *this);
+	int (*readInteger)(ByteReader *this);
 
 };
 

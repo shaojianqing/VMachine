@@ -29,8 +29,6 @@ ClassType* loadClassData(char *filename) {
 			classData = memcpy(classData, classFileBuffer, size);
 			u32* magic = (u32 *)classFileBuffer;
 			*magic = swapU32(*magic);
-			printf("ClassType:%X\n", *magic);
-			printf("Start Resolving Class Type^+^\n");
 			resolveClassData(classType, classData);
 		}
 		int res = close(fd);

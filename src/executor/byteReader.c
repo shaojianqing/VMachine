@@ -7,11 +7,11 @@
 #include "../common/commonType.h"
 #include "byteReader.h"
 
-static u8 readByte(ByteReader *this);
+static byte readByte(ByteReader *this);
 
-static u16 readShort(ByteReader *this);
+static short readShort(ByteReader *this);
 
-static u32 readInteger(ByteReader *this);
+static int readInteger(ByteReader *this);
 
 ByteReader *createByteReader(byte* code, u32 length, u32 pc) {
 	if (code!=NULL && length>0) {
@@ -30,23 +30,22 @@ ByteReader *createByteReader(byte* code, u32 length, u32 pc) {
 	return NULL;
 }
 
-u8 readByte(ByteReader *this) {
+byte readByte(ByteReader *this) {
 	byte data = this->code[this->pc];
 	this->pc++;
 	return data;
 }
 
-u16 readShort(ByteReader *this) {
+short readShort(ByteReader *this) {
 	byte data1 = readByte(this);
 	byte data2 = readByte(this);
 	return (data1 << 8) | data2;
 }
 
-u32 readInteger(ByteReader *this) {
+int readInteger(ByteReader *this) {
 	byte data1 = readByte(this);
 	byte data2 = readByte(this);
 	byte data3 = readByte(this);
 	byte data4 = readByte(this);
-	return (data1 << 24) | (data2 << 16) | 
-		   (data2 << 8) | data1;
+	return (data1 << 24) | (data2 << 16) | (data2 << 8) | data1;
 }
