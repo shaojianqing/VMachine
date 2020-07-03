@@ -13,7 +13,7 @@ TARGET = VMachine
 
 TGT = tgt/*
 
-OBJS = tgt/vmachine.o tgt/resolver.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/stringType.o tgt/dataType.o tgt/byteReader.o tgt/class.o tgt/instruction.o tgt/operandStack.o tgt/localVariable.o tgt/stackFrame.o
+OBJS = tgt/vmachine.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/stringType.o tgt/dataType.o tgt/byteReader.o tgt/class.o tgt/instruction.o tgt/operandStack.o tgt/localVariable.o tgt/stackFrame.o tgt/miniunz.o tgt/unzip.o tgt/ioapi.o
 
 .PHONY : build clean
 
@@ -21,6 +21,15 @@ build : clean $(TARGET)
 
 clean :
 	 rm -rf $(TARGET) $(TGT)
+
+tgt/miniunz.o : src/minizip/miniunz.c
+	$(CC) $(CCFLAGES) $< -o $@
+
+tgt/unzip.o : src/minizip/unzip.c src/minizip/unzip.h
+	$(CC) $(CCFLAGES) $< -o $@
+
+tgt/ioapi.o : src/minizip/ioapi.c src/minizip/ioapi.h
+	$(CC) $(CCFLAGES) $< -o $@
 
 tgt/hashMap.o : src/hashmap/hashMap.c src/hashmap/hashMap.h
 	$(CC) $(CCFLAGES) $< -o $@
@@ -35,9 +44,6 @@ tgt/dataType.o : src/datatype/dataType.c src/datatype/dataType.h
 	$(CC) $(CCFLAGES) $< -o $@
 
 tgt/endianSwap.o : src/endian/endianSwap.c src/endian/endianSwap.h
-	$(CC) $(CCFLAGES) $< -o $@
-
-tgt/resolver.o : src/resolver/resolver.c src/resolver/resolver.h
 	$(CC) $(CCFLAGES) $< -o $@
 
 tgt/class.o : src/resolver/class.c src/resolver/class.h
@@ -61,5 +67,5 @@ tgt/stackFrame.o : src/executor/stackFrame.c src/executor/stackFrame.h
 tgt/vmachine.o : src/runtime/vmachine.c
 	$(CC) $(CCFLAGES) $< -o $@
 
-VMachine : tgt/vmachine.o tgt/resolver.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/stringType.o tgt/dataType.o tgt/byteReader.o tgt/class.o tgt/instruction.o tgt/operandStack.o tgt/localVariable.o tgt/stackFrame.o
+VMachine : tgt/vmachine.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/stringType.o tgt/dataType.o tgt/byteReader.o tgt/class.o tgt/instruction.o tgt/operandStack.o tgt/localVariable.o tgt/stackFrame.o tgt/miniunz.o tgt/unzip.o tgt/ioapi.o
 	$(CC) $(OBJS) -o $@

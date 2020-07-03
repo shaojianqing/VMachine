@@ -2,7 +2,6 @@
 
 #include "../common/commonType.h"
 #include "../common/constants.h"
-#include "../resolver/resolver.h"
 #include "../resolver/class.h"
 
 #include "slotType.h"

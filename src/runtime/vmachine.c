@@ -4,7 +4,6 @@
 #include "../common/constants.h"
 #include "../common/commonType.h"
 #include "../datatype/stringType.h"
-#include "../resolver/resolver.h"
 #include "../resolver/class.h"
 
 #include "../executor/slotType.h"
@@ -13,8 +12,23 @@
 #include "../executor/byteReader.h"
 #include "../executor/stackFrame.h"
 #include "../executor/instruction.h"
+#include "../datatype/dataType.h"
+#include "../hashmap/hashMap.h"
 
 #include "vmachine.h"
+
+Class* findClassByName(VMachine *this, char* name);
+
+void startVMachine(VMachine *this);
+
+VMachine* buildVMachine() {
+
+}
+
+
+
+
+
 
 int main(int argc, char **argv) {
 	
@@ -24,10 +38,9 @@ int main(int argc, char **argv) {
 	}
 	
 	char *filename = argv[1];
-	ClassType *classType = loadClassData(filename);
-	Class *class = initializeClass(classType);
+	Class *class = defineClass(filename);
 
-	Method *mainMethod = class->findMainMethod(class);
+	/*Method *mainMethod = class->findMainMethod(class);
 	StackFrame *stackFrame = createStackFrame(mainMethod);
 	ByteReader *byteReader = createByteReader(mainMethod->codeData, mainMethod->codeLength, 0);
 
@@ -36,7 +49,7 @@ int main(int argc, char **argv) {
 		Instruction *instruction = getInstructionByCode(operCode);
 		instruction->fetcher(byteReader, stackFrame);
 		instruction->processor(stackFrame);
-	}
+	}*/
 
 	printf("ClassName:			%s\n", class->className);
 	printf("SuperName:			%s\n", class->superClassName);
@@ -45,18 +58,18 @@ int main(int argc, char **argv) {
 	printf("FieldCount:			%d\n", class->fieldCount);
 	printf("FieldName:			%s\n", class->fieldList[0].fieldName);
 	printf("FieldDescriptor:		%s\n", class->fieldList[0].descriptor);
-	printf("FieldName:			%s\n", class->methodList[0].methodName);
-	printf("FieldDescriptor:		%s\n", class->methodList[0].descriptor);
+	printf("MethodName:			%s\n", class->methodList[0].methodName);
+	printf("MethodDescriptor:		%s\n", class->methodList[0].descriptor);
 
 	printf("\n\n\n\n");
 
-	printf("Class Magic:					%X\n", classType->magic);
-	printf("Class MinorVersion:				%d\n", classType->minorVersion);
-	printf("Class majorVersion:				%d\n", classType->majorVersion);
-	printf("Class constPoolCount:				%d\n", classType->constPoolCount);
-	printf("Class accessFlags:				%d\n", classType->accessFlags);
-	printf("Class thisClass:				%d\n", classType->thisClass);
-	printf("Class superClass:				%d\n", classType->superClass);
+	printf("Class Magic:					%X\n", class->magic);
+	printf("Class MinorVersion:				%d\n", class->minorVersion);
+	printf("Class majorVersion:				%d\n", class->majorVersion);
+	printf("Class constPoolCount:				%d\n", class->constPoolCount);
+	printf("Class accessFlags:				%d\n", class->accessFlags);
+	printf("Class thisClass:				%s\n", class->className);
+	printf("Class superClass:				%s\n", class->superClassName);
 	printf("Class interfaceCount:				%d\n", class->interfaceCount);
 	//printf("Class interfaceName:				%s\n", class->interfaceList[0]);
 	printf("Class fieldCount:				%d\n", class->fieldCount);
@@ -67,19 +80,19 @@ int main(int argc, char **argv) {
 
 	printf("Class attributeCount:				%d\n", class->attributeCount);
 	printf("Class attributeName:				%s\n", class->attributeList[0].attributeName);
-	printf("Class attributeValue:				%d\n", class->attributeList[0].data);
+	printf("Class attributeValue:				%s\n", class->attributeList[0].data);
 
 	printf("Start to print UTF-8 String Value!\n\n");
 
-	u16 constPoolCount = classType->constPoolCount;
+	u16 constPoolCount = class->constPoolCount;
 	u16 i = 0;
 	for (i=1;i<constPoolCount;++i) {
-		ConstPool constPool = classType->constPool[i];
+		ConstPool constPool = class->constPool[i];
 		if (constPool.type == CONSTANT_Utf8) {
 			ConstUtf8Info *constUtf8Info = (ConstUtf8Info *)constPool.value;
 			printf("%i-> UTF-8Info Value:%s\n", i, constUtf8Info->bytes);
 			printf("%i-> UTF-8Info Length:%d\n", i, constUtf8Info->length);
-			printf("%i-> UTF-8Info StrLen:%d\n", i, strlen(constUtf8Info->bytes));
+			printf("%i-> UTF-8Info StrLen:%lu\n", i, strlen(constUtf8Info->bytes));
 		} else if (constPool.type == CONSTANT_Fieldref) {
 			ConstFieldRefInfo *constFieldRefInfo = (ConstFieldRefInfo *)constPool.value;
 			printf("%i-> FieldRef classIndex:%i\n", i, constFieldRefInfo->classIndex);
@@ -110,28 +123,28 @@ int main(int argc, char **argv) {
 	}
 
 	printf("\nStart to print field info~~\n");
-	u16 fieldCount = classType->fieldCount;
+	u16 fieldCount = class->fieldCount;
 	for (i=0;i<fieldCount;++i) {
-		FieldInfo field = classType->fieldList[i];
-		printf("The Field NameIndex:%i\n", field.nameIndex);
-		printf("The Field descriptorIndex:%i\n", field.descriptorIndex);	
+		Field field = class->fieldList[i];
+		printf("The Field Name:%s\n", field.fieldName);
+		printf("The Field descriptor:%s\n", field.descriptor);	
 		printf("The Field attributeCount:%i\n", field.attributeCount);
 		printf("\r\n");			
 	}
 	
 	printf("Start to print method info~~\n");
-	u16 methodCount = classType->methodCount;
+	u16 methodCount = class->methodCount;
 	for (i=0;i<methodCount;++i) {
-		MethodInfo method = classType->methodList[i];
-		printf("The Mehtod NameIndex:%i\n", method.nameIndex);
-		printf("The Mehtod descriptorIndex:%i\n", method.descriptorIndex);
+		Method method = class->methodList[i];
+		printf("The Mehtod Name:%s\n", method.methodName);
+		printf("The Mehtod descriptor:%s\n", method.descriptor);
 		printf("The Mehtod attributeCount:%i\n", method.attributeCount);
 		u16 k = 0;
 		for (k=0;k<method.attributeCount;++k) {
-			AttributeInfo attributeInfo = method.attributeList[k];
-			printf("The Mehtod AttributeInfo nameIndex:%i\n", attributeInfo.nameIndex);
-			printf("The Mehtod AttributeInfo attrLength:%i\n", attributeInfo.attrLength);
-			printf("The Mehtod AttributeInfo data:%s\n", attributeInfo.data);
+			Attribute attribute = method.attributeList[k];
+			printf("The Mehtod AttributeInfo name:%s\n", attribute.attributeName);
+			printf("The Mehtod AttributeInfo attrLength:%i\n", attribute.attributeLength);
+			printf("The Mehtod AttributeInfo data:%s\n", attribute.data);
 		}
 		printf("\r\n");			
 	}

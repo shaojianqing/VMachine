@@ -28,13 +28,151 @@ typedef struct Exception Exception;
 
 typedef struct Attribute Attribute;
 
+typedef struct ConstUtf8Info {
+
+    u8 tag;
+
+    u16 length;
+
+    byte* bytes;
+
+} ConstUtf8Info;
+
+typedef struct ConstIntegerInfo {
+
+    u8 tag;
+
+    u32 bytes;
+
+} ConstIntegerInfo;
+
+typedef struct ConstFloatInfo {
+
+    u8 tag;
+
+    u32 bytes;
+
+} ConstFloatInfo;
+
+typedef struct ConstLongInfo {
+
+    u8 tag;
+
+    u32 highBytes;
+
+    u32 lowBytes;
+
+} ConstLongInfo;
+
+typedef struct ConstDoubleInfo {
+
+    u8 tag;
+
+    u32 highBytes;
+
+    u32 lowBytes;
+
+} ConstDoubleInfo;
+
+typedef struct ConstClassInfo {
+
+    u8 tag;
+
+    u16 nameIndex;
+
+} ConstClassInfo;
+
+typedef struct ConstStringInfo {
+
+    u8 tag;
+
+    u16 stringIndex;
+
+} ConstStringInfo;
+
+typedef struct ConstFieldRefInfo {
+
+    u8 tag;
+
+    u16 classIndex;
+
+    u16 nameAndTypeIndex;
+
+} ConstFieldRefInfo;
+
+typedef struct ConstMethodRefInfo {
+
+    u8 tag;
+
+    u16 classIndex;
+
+    u16 nameAndTypeIndex;
+
+} ConstMethodRefInfo;
+
+typedef struct ConstInterfaceMethodRefInfo {
+
+    u8 tag;
+
+    u16 classIndex;
+
+    u16 nameAndTypeIndex;
+
+} ConstInterfaceMethodRefInfo;
+
+typedef struct ConstNameAndTypeInfo {
+
+    u8 tag;
+
+    u16 nameIndex;
+
+    u16 descriptorIndex;
+
+} ConstNameAndTypeInfo;
+
+typedef struct ConstMethodHandleInfo {
+
+    u8 tag;
+
+    u8 referenceKind;
+
+    u16 referenceIndex;
+
+} ConstMethodHandleInfo;
+
+typedef struct ConstMethodTypeInfo {
+
+    u8 tag;
+
+    u16 descriptorIndex;
+
+} ConstMethodTypeInfo;
+
+typedef struct ConstInvokeDynamicInfo {
+
+    u8 tag;
+
+    u16 bootstrapMethodAttrIndex;
+
+    u16 nameAndTypeIndex;
+
+} ConstInvokeDynamicInfo;
+
+typedef struct ConstPool {
+
+	u8 type;
+
+	void *value;
+
+} ConstPool;
+
 typedef struct Attribute {
 	
 	char* attributeName;
 
 	u32	attributeLength;
 
-	void *data;
+	byte *data;
 
 } Attribute;
 
@@ -97,7 +235,15 @@ struct Method {
 
 struct Class {
 
+	u32 magic;
+
+	u16 minorVersion;
+
+	u16 majorVersion;
+
 	u16 accessFlags;
+
+	u16 constPoolCount;
 
 	ConstPool *constPool;
 
@@ -150,4 +296,4 @@ struct Class {
 	Method* (*findMainMethod)(Class *this);
 };
 
-Class* initializeClass(ClassType *classType);
+Class* defineClass(char *classFilename);
