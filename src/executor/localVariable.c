@@ -4,7 +4,7 @@
 #include "../common/commonType.h"
 #include "../common/constants.h"
 
-#include "slotType.h"
+#include "dataStructure.h"
 #include "localVariable.h"
 
 static void setInt(LocalVariables *this, u32 index, int value);
@@ -27,9 +27,14 @@ static void setReference(LocalVariables *this, u32 index, void* reference);
 
 static void* getReference(LocalVariables *this, u32 index);
 
+static void setSlotData(LocalVariables *this, u32 index, SlotData *slotData);
+
+static SlotData* getSlotData(LocalVariables *this, u32 index);
+
 LocalVariables *createLocalVariables(u32 maxLocalVariables) {
     if (maxLocalVariables>0) {
-        LocalVariables *localVariables = (LocalVariables *)malloc(sizeof(LocalVariables));
+        LocalVariables *localVariables = (LocalVariables *)calloc(1, sizeof(LocalVariables));
+        localVariables->slotDataCount = maxLocalVariables;
         localVariables->slotList = (SlotData *)calloc(maxLocalVariables, sizeof(SlotData));
         localVariables->setInt = setInt;
         localVariables->getInt = getInt;
@@ -41,6 +46,8 @@ LocalVariables *createLocalVariables(u32 maxLocalVariables) {
         localVariables->getDouble = getDouble;
         localVariables->setReference = setReference;
         localVariables->getReference = getReference;
+        localVariables->setSlotData = setSlotData;
+        localVariables->getSlotData = getSlotData;
 
         return localVariables;
     }
@@ -85,4 +92,12 @@ static void setReference(LocalVariables *this, u32 index, void* reference) {
 
 static void* getReference(LocalVariables *this, u32 index) {
     return this->slotList[index].reference;
+}
+
+static void setSlotData(LocalVariables *this, u32 index, SlotData *slotData) {
+    this->slotList[index] = *slotData;
+}
+
+static SlotData* getSlotData(LocalVariables *this, u32 index) {
+    return &this->slotList[index];
 }

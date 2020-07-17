@@ -214,10 +214,9 @@ static void printHashMap(HashMap *this) {
 	if (this!=NULL) {
 		u32 i=0;
 		for (i=0;i<this->capacity;++i) {
-			printf("Index:%2d ", i);
 			Entry *entry = this->table[i];
 			while (entry!=NULL) {
-				printf("(%s,%s)", (char *)entry->key, (char *)entry->value);
+				printf("%s", (char *)entry->key);
 				entry = entry->next;			
 			}
 			printf("\n");

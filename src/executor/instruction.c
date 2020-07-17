@@ -1,14 +1,22 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "../common/commonType.h"
 #include "../common/constants.h"
+#include "../datatype/dataType.h"
+#include "../hashmap/hashMap.h"
 #include "../resolver/class.h"
+#include "../runtime/vmachine.h"
 
-#include "slotType.h"
+#include "dataStructure.h"
 #include "localVariable.h"
 #include "operandStack.h"
 #include "byteReader.h"
 #include "stackFrame.h"
+#include "thread.h"
+#include "instance.h"
+#include "descriptor.h"
 #include "instruction.h"
 
 #define nop 			0x00		
@@ -998,26 +1006,6 @@ static bool ldc2WProcessor(StackFrame *frame) {
     return true;
 }
 
-static bool iloadProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool lloadProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool floadProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool dloadProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool aloadProcessor(StackFrame *frame) {
-    return true;
-}
-
 static bool iloadProcess(StackFrame *frame, u32 index) {
     LocalVariables *localVariables = frame->localVariables;
     int value = localVariables->getInt(localVariables, index);
@@ -1025,6 +1013,77 @@ static bool iloadProcess(StackFrame *frame, u32 index) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushInt(operandStack, value);
     return true;
+}
+
+static bool lloadProcess(StackFrame *frame, u32 index) {
+    LocalVariables *localVariables = frame->localVariables;
+    long value = localVariables->getLong(localVariables, index);
+
+    OperandStack *operandStack = frame->operandStack;
+    operandStack->pushLong(operandStack, value);
+    return true;
+}
+
+static bool floadProcess(StackFrame *frame, u32 index) {
+    LocalVariables *localVariables = frame->localVariables;
+    float value = localVariables->getFloat(localVariables, index);
+
+    OperandStack *operandStack = frame->operandStack;
+    operandStack->pushFloat(operandStack, value);
+    return true;
+}
+
+static bool dloadProcess(StackFrame *frame, u32 index) {
+    LocalVariables *localVariables = frame->localVariables;
+    double value = localVariables->getDouble(localVariables, index);
+
+    OperandStack *operandStack = frame->operandStack;
+    operandStack->pushDouble(operandStack, value);
+    return true;
+}
+
+static bool aloadProcess(StackFrame *frame, u32 index) {
+    LocalVariables *localVariables = frame->localVariables;
+    void *reference = localVariables->getReference(localVariables, index);
+
+    OperandStack *operandStack = frame->operandStack;
+    operandStack->pushReference(operandStack, reference);
+    return true;
+}
+
+static bool iloadProcessor(StackFrame *frame) {
+    OperandStore operandStore = frame->operandStore;
+    Index8Operand index8Operand = operandStore.index8Operand;
+    
+    return iloadProcess(frame, index8Operand.index);
+}
+
+static bool lloadProcessor(StackFrame *frame) {
+    OperandStore operandStore = frame->operandStore;
+    Index8Operand index8Operand = operandStore.index8Operand;
+    
+    return lloadProcess(frame, index8Operand.index);
+}
+
+static bool floadProcessor(StackFrame *frame) {
+    OperandStore operandStore = frame->operandStore;
+    Index8Operand index8Operand = operandStore.index8Operand;
+    
+    return floadProcess(frame, index8Operand.index);
+}
+
+static bool dloadProcessor(StackFrame *frame) {
+    OperandStore operandStore = frame->operandStore;
+    Index8Operand index8Operand = operandStore.index8Operand;
+    
+    return dloadProcess(frame, index8Operand.index);
+}
+
+static bool aloadProcessor(StackFrame *frame) {
+    OperandStore operandStore = frame->operandStore;
+    Index8Operand index8Operand = operandStore.index8Operand;
+    
+    return aloadProcess(frame, index8Operand.index);
 }
 
 static bool iload0Processor(StackFrame *frame) {
@@ -1043,15 +1102,6 @@ static bool iload3Processor(StackFrame *frame) {
     return iloadProcess(frame, 3);
 }
 
-static bool lloadProcess(StackFrame *frame, u32 index) {
-    LocalVariables *localVariables = frame->localVariables;
-    long value = localVariables->getLong(localVariables, index);
-
-    OperandStack *operandStack = frame->operandStack;
-    operandStack->pushLong(operandStack, value);
-    return true;
-}
-
 static bool lload0Prcoessor(StackFrame *frame) {
     return lloadProcess(frame, 0);
 }
@@ -1066,15 +1116,6 @@ static bool lload2Processor(StackFrame *frame) {
 
 static bool lload3Processor(StackFrame *frame) {
     return lloadProcess(frame, 3);
-}
-
-static bool floadProcess(StackFrame *frame, u32 index) {
-    LocalVariables *localVariables = frame->localVariables;
-    float value = localVariables->getFloat(localVariables, index);
-
-    OperandStack *operandStack = frame->operandStack;
-    operandStack->pushFloat(operandStack, value);
-    return true;
 }
 
 static bool fload0Processor(StackFrame *frame) {
@@ -1093,15 +1134,6 @@ static bool fload3Processor(StackFrame *frame) {
     return floadProcess(frame, 3);
 }
 
-static bool dloadProcess(StackFrame *frame, u32 index) {
-    LocalVariables *localVariables = frame->localVariables;
-    double value = localVariables->getDouble(localVariables, index);
-
-    OperandStack *operandStack = frame->operandStack;
-    operandStack->pushDouble(operandStack, value);
-    return true;
-}
-
 static bool dload0Processor(StackFrame *frame) {
     return dloadProcess(frame, 0);
 }
@@ -1116,15 +1148,6 @@ static bool dload2Processor(StackFrame *frame) {
 
 static bool dload3Processor(StackFrame *frame) {
     return dloadProcess(frame, 3);
-}
-
-static bool aloadProcess(StackFrame *frame, u32 index) {
-    LocalVariables *localVariables = frame->localVariables;
-    void *reference = localVariables->getReference(localVariables, index);
-
-    OperandStack *operandStack = frame->operandStack;
-    operandStack->pushReference(operandStack, reference);
-    return true;
 }
 
 static bool aload0Processor(StackFrame *frame) {
@@ -1175,26 +1198,6 @@ static bool saloadProcessor(StackFrame *frame) {
     return true;
 }
 
-static bool istoreProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool lstoredProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool fstoreProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool dstoreProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool astoreProcessor(StackFrame *frame) {
-    return true;
-}
-
 static bool istoreProcess(StackFrame *frame, u32 index) {
     OperandStack *operandStack = frame->operandStack;
     int value = operandStack->popInt(operandStack);
@@ -1203,6 +1206,86 @@ static bool istoreProcess(StackFrame *frame, u32 index) {
     localVariables->setInt(localVariables, index, value);
 
     return true;
+}
+
+static bool istoreProcessor(StackFrame *frame) {
+    OperandStore operandStore = frame->operandStore;
+    Index8Operand index8Operand = operandStore.index8Operand;
+    u32 index = index8Operand.index;
+
+    return istoreProcess(frame, index);
+}
+
+static bool lstoreProcess(StackFrame *frame, u32 index) {
+    OperandStack *operandStack = frame->operandStack;
+    long value = operandStack->popLong(operandStack);
+
+    LocalVariables *localVariables = frame->localVariables;
+    localVariables->setLong(localVariables, index, value);
+
+    return true;
+}
+
+static bool lstoredProcessor(StackFrame *frame) {
+    OperandStore operandStore = frame->operandStore;
+    Index8Operand index8Operand = operandStore.index8Operand;
+    u32 index = index8Operand.index;
+
+    return lstoreProcess(frame, index);
+}
+
+static bool fstoreProcess(StackFrame *frame, u32 index) {
+    OperandStack *operandStack = frame->operandStack;
+    float value = operandStack->popFloat(operandStack);
+
+    LocalVariables *localVariables = frame->localVariables;
+    localVariables->setFloat(localVariables, index, value);
+
+    return true;
+}
+
+static bool fstoreProcessor(StackFrame *frame) {
+    OperandStore operandStore = frame->operandStore;
+    Index8Operand index8Operand = operandStore.index8Operand;
+    u32 index = index8Operand.index;
+    
+    return fstoreProcess(frame, index);
+}
+
+static bool dstoreProcess(StackFrame *frame, u32 index) {
+    OperandStack *operandStack = frame->operandStack;
+    double value = operandStack->popDouble(operandStack);
+
+    LocalVariables *localVariables = frame->localVariables;
+    localVariables->setDouble(localVariables, index, value);
+
+    return true;
+}
+
+static bool dstoreProcessor(StackFrame *frame) {
+    OperandStore operandStore = frame->operandStore;
+    Index8Operand index8Operand = operandStore.index8Operand;
+    u32 index = index8Operand.index;
+
+    return dstoreProcess(frame, index);
+}
+
+static bool astoreProcess(StackFrame *frame, u32 index) {
+    OperandStack *operandStack = frame->operandStack;
+    void *reference = operandStack->popReference(operandStack);
+
+    LocalVariables *localVariables = frame->localVariables;
+    localVariables->setReference(localVariables, index, reference);
+
+    return true;
+}
+
+static bool astoreProcessor(StackFrame *frame) {
+    OperandStore operandStore = frame->operandStore;
+    Index8Operand index8Operand = operandStore.index8Operand;
+    u32 index = index8Operand.index;
+
+    return astoreProcess(frame, index);
 }
 
 static bool istore0Processor(StackFrame *frame) {
@@ -1221,16 +1304,6 @@ static bool istore3Processor(StackFrame *frame) {
     return istoreProcess(frame, 3);
 }
 
-static bool lstoreProcess(StackFrame *frame, u32 index) {
-    OperandStack *operandStack = frame->operandStack;
-    long value = operandStack->popLong(operandStack);
-
-    LocalVariables *localVariables = frame->localVariables;
-    localVariables->setLong(localVariables, index, value);
-
-    return true;
-}
-
 static bool lstore0Processor(StackFrame *frame) {
     return lstoreProcess(frame, 0);
 }
@@ -1245,16 +1318,6 @@ static bool lstore2Processor(StackFrame *frame) {
 
 static bool lstore3Processor(StackFrame *frame) {
     return lstoreProcess(frame, 3);
-}
-
-static bool fstoreProcess(StackFrame *frame, u32 index) {
-    OperandStack *operandStack = frame->operandStack;
-    float value = operandStack->popFloat(operandStack);
-
-    LocalVariables *localVariables = frame->localVariables;
-    localVariables->setFloat(localVariables, index, value);
-
-    return true;
 }
 
 static bool fstore0Processor(StackFrame *frame) {
@@ -1273,16 +1336,6 @@ static bool fstore3Processor(StackFrame *frame) {
     return fstoreProcess(frame, 3);
 }
 
-static bool dstoreProcess(StackFrame *frame, u32 index) {
-    OperandStack *operandStack = frame->operandStack;
-    double value = operandStack->popDouble(operandStack);
-
-    LocalVariables *localVariables = frame->localVariables;
-    localVariables->setDouble(localVariables, index, value);
-
-    return true;
-}
-
 static bool dstore0Processor(StackFrame *frame) {
     return dstoreProcess(frame, 0);
 }
@@ -1297,16 +1350,6 @@ static bool dstore2Processor(StackFrame *frame) {
 
 static bool dstore3Processor(StackFrame *frame) {
     return dstoreProcess(frame, 3);
-}
-
-static bool astoreProcess(StackFrame *frame, u32 index) {
-    OperandStack *operandStack = frame->operandStack;
-    void *reference = operandStack->popReference(operandStack);
-
-    LocalVariables *localVariables = frame->localVariables;
-    localVariables->setReference(localVariables, index, reference);
-
-    return true;
 }
 
 static bool astore0Processor(StackFrame *frame) {
@@ -1360,6 +1403,7 @@ static bool sastoreProcessor(StackFrame *frame) {
 static bool popProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->popSlotData(operandStack);
+    
     return true;
 }
 
@@ -1367,30 +1411,81 @@ static bool pop2Processor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->popSlotData(operandStack);
     operandStack->popSlotData(operandStack);
+
     return true;
 }
 
 static bool dupProcessor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    SlotData *slotData = operandStack->popSlotData(operandStack);
+    operandStack->pushSlotData(operandStack, slotData);
+
     return true;
 }
 
 static bool dupX1Processor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    SlotData *slotData1 = operandStack->popSlotData(operandStack);
+    SlotData *slotData2 = operandStack->popSlotData(operandStack);
+    operandStack->pushSlotData(operandStack, slotData1);
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+
     return true;
 }
 
 static bool dupX2Processor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    SlotData *slotData1 = operandStack->popSlotData(operandStack);
+    SlotData *slotData2 = operandStack->popSlotData(operandStack);
+    SlotData *slotData3 = operandStack->popSlotData(operandStack);
+    operandStack->pushSlotData(operandStack, slotData1);
+    operandStack->pushSlotData(operandStack, slotData3);
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+
     return true;
 }
 
 static bool dup2Processor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    SlotData *slotData1 = operandStack->popSlotData(operandStack);
+    SlotData *slotData2 = operandStack->popSlotData(operandStack);
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+
     return true;
 }
 
 static bool dup2X1Processor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    SlotData *slotData1 = operandStack->popSlotData(operandStack);
+    SlotData *slotData2 = operandStack->popSlotData(operandStack);
+    SlotData *slotData3 = operandStack->popSlotData(operandStack);
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+    operandStack->pushSlotData(operandStack, slotData3);
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+
     return true;
 }
 
 static bool dup2X2Processor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    SlotData *slotData1 = operandStack->popSlotData(operandStack);
+    SlotData *slotData2 = operandStack->popSlotData(operandStack);
+    SlotData *slotData3 = operandStack->popSlotData(operandStack);
+    SlotData *slotData4 = operandStack->popSlotData(operandStack);
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+    operandStack->pushSlotData(operandStack, slotData4);
+    operandStack->pushSlotData(operandStack, slotData3);
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+
     return true;
 }
 
@@ -1399,15 +1494,15 @@ static bool swapProcessor(StackFrame *frame) {
     SlotData *slotData1 = operandStack->popSlotData(operandStack);
     SlotData *slotData2 = operandStack->popSlotData(operandStack);
 
-    operandStack->pushSlotData(operandStack, *slotData1);
-    operandStack->pushSlotData(operandStack, *slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+    operandStack->pushSlotData(operandStack, slotData2);
     return true;
 }
 
 static bool iaddProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    int value1 = operandStack->popInt(operandStack);
     int value2 = operandStack->popInt(operandStack);
+    int value1 = operandStack->popInt(operandStack);
 
     int result = value1 + value2;
     operandStack->pushInt(operandStack, result);
@@ -1417,8 +1512,8 @@ static bool iaddProcessor(StackFrame *frame) {
 
 static bool laddProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    long value1 = operandStack->popLong(operandStack);
     long value2 = operandStack->popLong(operandStack);
+    long value1 = operandStack->popLong(operandStack);
 
     long result = value1 + value2;
     operandStack->pushLong(operandStack, result);
@@ -1428,8 +1523,8 @@ static bool laddProcessor(StackFrame *frame) {
 
 static bool faddProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    float value1 = operandStack->popFloat(operandStack);
     float value2 = operandStack->popFloat(operandStack);
+    float value1 = operandStack->popFloat(operandStack);
 
     float result = value1 + value2;
     operandStack->pushFloat(operandStack, result);
@@ -1439,8 +1534,8 @@ static bool faddProcessor(StackFrame *frame) {
 
 static bool daddProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    double value1 = operandStack->popDouble(operandStack);
     double value2 = operandStack->popDouble(operandStack);
+    double value1 = operandStack->popDouble(operandStack);
 
     double result = value1 + value2;
     operandStack->pushDouble(operandStack, result);
@@ -1450,8 +1545,8 @@ static bool daddProcessor(StackFrame *frame) {
 
 static bool isubProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
+    int value2= operandStack->popInt(operandStack);
     int value1 = operandStack->popInt(operandStack);
-    int value2 = operandStack->popInt(operandStack);
 
     int result = value1 - value2;
     operandStack->pushInt(operandStack, result);
@@ -1461,8 +1556,8 @@ static bool isubProcessor(StackFrame *frame) {
 
 static bool lsubProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    long value1 = operandStack->popLong(operandStack);
     long value2 = operandStack->popLong(operandStack);
+    long value1 = operandStack->popLong(operandStack);
 
     long result = value1 - value2;
     operandStack->pushLong(operandStack, result);
@@ -1472,8 +1567,8 @@ static bool lsubProcessor(StackFrame *frame) {
 
 static bool fsubProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    float value1 = operandStack->popFloat(operandStack);
     float value2 = operandStack->popFloat(operandStack);
+    float value1 = operandStack->popFloat(operandStack);
 
     float result = value1 - value2;
     operandStack->pushFloat(operandStack, result);
@@ -1483,8 +1578,8 @@ static bool fsubProcessor(StackFrame *frame) {
 
 static bool dsubProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    double value1 = operandStack->popDouble(operandStack);
     double value2 = operandStack->popDouble(operandStack);
+    double value1 = operandStack->popDouble(operandStack);
 
     double result = value1 - value2;
     operandStack->pushDouble(operandStack, result);
@@ -1494,8 +1589,8 @@ static bool dsubProcessor(StackFrame *frame) {
 
 static bool imulProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    int value1 = operandStack->popInt(operandStack);
     int value2 = operandStack->popInt(operandStack);
+    int value1 = operandStack->popInt(operandStack);
 
     int result = value1 * value2;
     operandStack->pushInt(operandStack, result);
@@ -1505,8 +1600,8 @@ static bool imulProcessor(StackFrame *frame) {
 
 static bool lmulProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    long value1 = operandStack->popLong(operandStack);
     long value2 = operandStack->popLong(operandStack);
+    long value1 = operandStack->popLong(operandStack);
 
     long result = value1 * value2;
     operandStack->pushLong(operandStack, result);
@@ -1516,8 +1611,8 @@ static bool lmulProcessor(StackFrame *frame) {
 
 static bool fmulProcessor(StackFrame *frame) {
    OperandStack *operandStack = frame->operandStack;
-    float value1 = operandStack->popFloat(operandStack);
     float value2 = operandStack->popFloat(operandStack);
+    float value1 = operandStack->popFloat(operandStack);
 
     float result = value1 * value2;
     operandStack->pushFloat(operandStack, result);
@@ -1527,8 +1622,8 @@ static bool fmulProcessor(StackFrame *frame) {
 
 static bool dmulProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    double value1 = operandStack->popDouble(operandStack);
     double value2 = operandStack->popDouble(operandStack);
+    double value1 = operandStack->popDouble(operandStack);
 
     double result = value1 * value2;
     operandStack->pushDouble(operandStack, result);
@@ -1538,8 +1633,8 @@ static bool dmulProcessor(StackFrame *frame) {
 
 static bool idivProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    int value1 = operandStack->popInt(operandStack);
     int value2 = operandStack->popInt(operandStack);
+    int value1 = operandStack->popInt(operandStack);
 
     int result = value1 / value2;
     operandStack->pushInt(operandStack, result);
@@ -1549,8 +1644,8 @@ static bool idivProcessor(StackFrame *frame) {
 
 static bool ldivProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    long value1 = operandStack->popLong(operandStack);
     long value2 = operandStack->popLong(operandStack);
+    long value1 = operandStack->popLong(operandStack);
 
     long result = value1 / value2;
     operandStack->pushLong(operandStack, result);
@@ -1560,8 +1655,8 @@ static bool ldivProcessor(StackFrame *frame) {
 
 static bool fdivProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    float value1 = operandStack->popFloat(operandStack);
     float value2 = operandStack->popFloat(operandStack);
+    float value1 = operandStack->popFloat(operandStack);
 
     float result = value1 / value2;
     operandStack->pushFloat(operandStack, result);
@@ -1571,8 +1666,8 @@ static bool fdivProcessor(StackFrame *frame) {
 
 static bool ddivProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    double value1 = operandStack->popDouble(operandStack);
     double value2 = operandStack->popDouble(operandStack);
+    double value1 = operandStack->popDouble(operandStack);
 
     double result = value1 / value2;
     operandStack->pushDouble(operandStack, result);
@@ -1582,8 +1677,8 @@ static bool ddivProcessor(StackFrame *frame) {
 
 static bool iremProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    int value1 = operandStack->popInt(operandStack);
     int value2 = operandStack->popInt(operandStack);
+    int value1 = operandStack->popInt(operandStack);
 
     int result = value1 % value2;
     operandStack->pushInt(operandStack, result);
@@ -1593,8 +1688,8 @@ static bool iremProcessor(StackFrame *frame) {
 
 static bool lremProcessor(StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
-    long value1 = operandStack->popLong(operandStack);
     long value2 = operandStack->popLong(operandStack);
+    long value1 = operandStack->popLong(operandStack);
 
     long result = value1 % value2;
     operandStack->pushLong(operandStack, result);
@@ -1603,10 +1698,22 @@ static bool lremProcessor(StackFrame *frame) {
 }
 
 static bool fremProcessor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    float value2 = operandStack->popFloat(operandStack);
+    float value1 = operandStack->popFloat(operandStack);
+
+    float result = (float)fmod((double)value1, (double)value2);
+    operandStack->pushFloat(operandStack, result);
     return true;
 }
 
 static bool dremProcessor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    double value2 = operandStack->popDouble(operandStack);
+    double value1 = operandStack->popDouble(operandStack);
+
+    double result = fmod(value1, value2);
+    operandStack->pushDouble(operandStack, result);
     return true;
 }
 
@@ -1643,27 +1750,67 @@ static bool dnegProcessor(StackFrame *frame) {
 }
 
 static bool ishlProcessor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int value2 = operandStack->popInt(operandStack);
+    int value1 = operandStack->popInt(operandStack);
+    u32 num = ((u32)value2) & 0X1F;
+    int result = value1 << num;
+    operandStack->pushInt(operandStack, result);
+
     return true;
 }
 
 static bool lshlProcessor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    long value2 = operandStack->popInt(operandStack);
+    long value1 = operandStack->popLong(operandStack);
+    u32 num = ((u32)value2) & 0X1F;
+    long result = value1 << num;
+    operandStack->pushLong(operandStack, result);
+
     return true;
 }
 
 static bool ishrProcessor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int value2 = operandStack->popInt(operandStack);
+    int value1 = operandStack->popInt(operandStack);
+    u32 num = ((u32)value2) & 0X1F;
+    int result = value1 >> num;
+    operandStack->pushInt(operandStack, result);
+
     return true;
 }
 
 static bool lshrProcessor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    long value2 = operandStack->popInt(operandStack);
+    long value1 = operandStack->popLong(operandStack);
+    u32 num = ((u32)value2) & 0X1F;
+    long result = value1 >> num;
+    operandStack->pushLong(operandStack, result);
+
     return true;
 }
 
 static bool iushrProcessor(StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int value2 = operandStack->popInt(operandStack);
+    int value1 = operandStack->popInt(operandStack);
+    u32 num = ((u32)value2) & 0X1F;
+    int result = (int)(((u32)value1) >> num);
+    operandStack->pushInt(operandStack, result);
+
     return true;
 }
 
 static bool lushrProcessor(StackFrame *frame) {
-    return true;
+    OperandStack *operandStack = frame->operandStack;
+    long value2 = operandStack->popInt(operandStack);
+    long value1 = operandStack->popLong(operandStack);
+    u32 num = ((u32)value2) & 0X1F;
+    long result = (long)(((u64)value1) >> num);
+    operandStack->pushLong(operandStack, result);
 }
 
 static bool iandProcessor(StackFrame *frame) {
@@ -1893,6 +2040,16 @@ static bool lookupswitchProcessor(StackFrame *frame) {
 }
 
 static bool ireturnProcessor(StackFrame *frame) {
+    Thread *thread = frame->thread;
+    StackFrame *currentFrame = thread->popStackFrame(thread);
+    StackFrame *invokeFrame = thread->peekStackFrame(thread);
+
+    OperandStack *currentOperandStack = currentFrame->operandStack;
+    int value = currentOperandStack->popInt(currentOperandStack);
+    
+    OperandStack *invokeOperandStack = invokeFrame->operandStack;
+    invokeOperandStack->pushInt(invokeOperandStack, value);
+
     return true;
 }
 
@@ -1932,6 +2089,34 @@ static bool putFieldProcessor(StackFrame *frame) {
     return true;
 }
 
+static bool invokeMethodProcess(Thread *thread, StackFrame *stackFrame, Method *method) {
+	StackFrame *newStackFrame = createStackFrame(thread, method);
+	ByteReader *byteReader = createByteReader(method->codeData, method->codeLength, 0);
+
+    RuntimeStack *runtimeStack = thread->runtimeStack;
+    runtimeStack->pushStack(runtimeStack, newStackFrame);
+
+    MethodDescriptor *descriptor = method->methodDescriptor;
+    OperandStack *operandStack = stackFrame->operandStack;
+    LocalVariables *newLocalVariables = newStackFrame->localVariables;
+
+    int i = 0;
+    for (i=descriptor->paramTypeCount-1; i>=0; --i) {
+        SlotData *slotData = operandStack->popSlotData(operandStack);
+        newLocalVariables->setSlotData(newLocalVariables, i, slotData);
+    }
+
+	while(byteReader->pc < byteReader->length) {
+		u32 pc = byteReader->pc;
+		u8 operCode = byteReader->readByte(byteReader);
+		Instruction *instruction = getInstructionByCode(operCode);
+		printf("    PC:%02d %s\n", pc, instruction->name);
+		instruction->fetcher(byteReader, newStackFrame);
+		instruction->processor(newStackFrame);
+	}
+    return true;
+}
+
 static bool invokeVirtualProcessor(StackFrame *frame) {
     return true;
 }
@@ -1941,6 +2126,47 @@ static bool invokeSpecialProcessor(StackFrame *frame) {
 }
 
 static bool invokeStaticProcessor(StackFrame *frame) {
+
+    ConstPool *constPool;
+    ConstUtf8Info *constUtf8Info;
+    ConstClassInfo *constClassInfo;
+    ConstMethodRefInfo *constMethodRefInfo;
+    ConstNameAndTypeInfo *constNameAndTypeInfo;
+
+    OperandStore operandStore = frame->operandStore;
+    u16 index = operandStore.index16Operand.index;
+    Class *class = frame->method->class;
+    constPool = class->getConstant(class, index);
+    constMethodRefInfo = (ConstMethodRefInfo *)constPool->value;
+    u16 classIndex = constMethodRefInfo->classIndex;
+    u16 methodIndex = constMethodRefInfo->nameAndTypeIndex;
+
+    constPool = class->getConstant(class, classIndex);
+    constClassInfo = (ConstClassInfo *)constPool->value;
+    constPool = class->getConstant(class, constClassInfo->nameIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *className = constUtf8Info->bytes;
+
+    constPool = class->getConstant(class, methodIndex);
+    constNameAndTypeInfo = (ConstNameAndTypeInfo *)constPool->value;
+
+    u16 methodNameIndex = constNameAndTypeInfo->nameIndex;
+    u16 methodTypeIndex = constNameAndTypeInfo->descriptorIndex;
+
+    constPool = class->getConstant(class, methodNameIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *methodName = constUtf8Info->bytes;
+
+    constPool = class->getConstant(class, methodTypeIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *methodType = constUtf8Info->bytes;
+    
+    Class *invokeClass = vmachine->findClassByName(vmachine, className);
+    Method *invokeMethod = class->findMethod(invokeClass, methodName, methodType);
+    Thread *thread = frame->thread;
+
+    invokeMethodProcess(thread, frame, invokeMethod);
+
     return true;
 }
 
@@ -1953,6 +2179,19 @@ static bool invokeDynamicProcessor(StackFrame *frame) {
 }
 
 static bool newProcessor(StackFrame *frame) {
+    Index16Operand index16Operand = frame->operandStore.index16Operand;
+    u16 index = index16Operand.index;
+    Class *class = frame->method->class;
+    ConstPool *constPool = class->getConstant(class, index);
+    ConstClassInfo *constClassInfo = (ConstClassInfo *)constPool->value;
+    constPool = class->getConstant(class, constClassInfo->nameIndex);
+    ConstUtf8Info *constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *instClassName = constUtf8Info->bytes;
+    Class *instClass = vmachine->findClassByName(vmachine, instClassName);
+    Instance *instance = createInstance(instClass);
+    OperandStack *operandStack = frame->operandStack;
+    operandStack->pushReference(operandStack, instance);
+
     return true;
 }
 
@@ -2078,6 +2317,11 @@ static bool TableSwitchOperandFetcher(ByteReader *reader, StackFrame *frame) {
 }
 
 static bool InvokeInterfaceOperandFetcher(ByteReader *reader, StackFrame *frame) {
+    u16 operand = reader->readShort(reader);
+    frame->operandStore.invokeInterfaceOperand.index = operand;
+    reader->readByte(reader);
+    reader->readByte(reader);
+
     return true;
 }
 

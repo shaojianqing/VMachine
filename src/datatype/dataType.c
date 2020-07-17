@@ -4,13 +4,12 @@
 #include "../common/commonType.h"
 #include "dataType.h"
 
-int StringHashCode(Object *string) {
-	char *value = string;
-	if (value!=NULL && *value!='\0') {
+int StringHashCode(char *string) {
+	if (string!=NULL && *string!='\0') {
 		int hashCode = 0;
-		while (*value!='\0') {
-			hashCode = hashCode*31 + (*value);
-			value++;
+		while (*string!='\0') {
+			hashCode = hashCode*31 + (*string);
+			string++;
 		}	
 		return hashCode;
 	} else {
@@ -18,7 +17,7 @@ int StringHashCode(Object *string) {
 	}
 }
 
-bool StringEqualFun(Object *obj1, Object *obj2) {
+bool StringEqualFun(char *obj1, char *obj2) {
 	if (obj1!=NULL && obj2!=NULL) {
 		if (obj1==obj2) {
 			return true;		

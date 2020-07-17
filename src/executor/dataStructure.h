@@ -1,5 +1,5 @@
 typedef union SlotData {
-		
+
 	int intValue;
 
 	float floatValue;

@@ -1,4 +1,6 @@
 
+typedef struct Thread Thread;
+
 typedef struct Instruction Instruction;
 
 typedef struct StackFrame StackFrame;
@@ -20,6 +22,8 @@ typedef struct WideOperand WideOperand;
 typedef struct IIncOperand IIncOperand;
 
 typedef struct GotoWOperand GotoWOperand;
+
+typedef struct RuntimeStack RuntimeStack;
 
 typedef struct NewArrayOperand NewArrayOperand;
 
@@ -135,7 +139,26 @@ struct StackFrame {
 
     OperandStack *operandStack;
 
+    Thread *thread;
+
     Method *method;
 };
 
-StackFrame *createStackFrame(Method *method);
+struct RuntimeStack {
+
+    int count;
+
+    StackFrame **frameStack;
+
+    void (*pushStack)(RuntimeStack *this, StackFrame *stackFrame);
+
+    StackFrame* (*popStack)(RuntimeStack *this);
+
+    StackFrame* (*peekStack)(RuntimeStack *this);
+
+    bool (*isStackEmpty)(RuntimeStack *this);
+};
+
+StackFrame *createStackFrame(Thread *thread, Method *method);
+
+RuntimeStack *createRuntimeStack();

@@ -1,6 +1,11 @@
 #define true						1
 #define false						0
 
+#define JAVA_HOME                   "JAVA_HOME"
+
+#define MAX_STACK_FRAME             256
+
+#define MAX_FILE_NAME               256
 #define MAX_FILE_SIZE 				10240
 
 #define CONSTANT_Utf8 				1

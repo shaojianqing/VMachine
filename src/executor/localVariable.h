@@ -2,6 +2,8 @@ typedef struct  LocalVariables LocalVariables;
 
 struct LocalVariables {
 
+    u32 slotDataCount;
+
     SlotData *slotList;
 
     void (*setInt)(LocalVariables *this, u32 index, int value);
@@ -23,6 +25,10 @@ struct LocalVariables {
     void (*setReference)(LocalVariables *this, u32 index, void* reference);
 
     void* (*getReference)(LocalVariables *this, u32 index);
+
+    void (*setSlotData)(LocalVariables *this, u32 index, SlotData *slotData);
+
+    SlotData* (*getSlotData)(LocalVariables *this, u32 index);
 };
 
 LocalVariables *createLocalVariables(u32 maxLocalVariables);

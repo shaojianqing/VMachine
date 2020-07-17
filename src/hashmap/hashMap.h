@@ -46,7 +46,3 @@ struct HashMap {
 HashMap* createHashMap(HashCode hashCode, EqualFun equalFun, u32 capacity);
 
 void destroyHashMap(HashMap* this);
-
-int StringHashCode(Object *string);
-
-bool StringEqualFun(Object *obj1, Object *obj2);

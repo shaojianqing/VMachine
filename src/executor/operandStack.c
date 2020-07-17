@@ -3,8 +3,9 @@
 
 #include "../common/commonType.h"
 #include "../common/constants.h"
+#include "../resolver/class.h"
 
-#include "slotType.h"
+#include "dataStructure.h"
 #include "operandStack.h"
 
 static void pushInt(OperandStack *this, int value);
@@ -27,14 +28,15 @@ static void pushReference(OperandStack *this, void *reference);
 
 static void* popReference(OperandStack *this);
 
-static void pushSlotData(OperandStack *this, SlotData slotData);
+static void pushSlotData(OperandStack *this, SlotData *slotData);
 
 static SlotData* popSlotData(OperandStack *this);
 
 OperandStack *createOperandStack(u32 maxStack) {
     if (maxStack>0) {
-        OperandStack *operandStack = (OperandStack *)malloc(sizeof(OperandStack));
-        operandStack->count = maxStack;
+        OperandStack *operandStack = (OperandStack *)calloc(1, sizeof(OperandStack));
+        operandStack->count = 0;
+        operandStack->capacity = maxStack;
         operandStack->slotList = (SlotData *)calloc(maxStack, sizeof(SlotData));
 
         operandStack->pushInt = pushInt;
@@ -105,8 +107,8 @@ static void* popReference(OperandStack *this) {
     return this->slotList[this->count].reference;
 }
 
-static void pushSlotData(OperandStack *this, SlotData slotData) {
-    this->slotList[this->count] = slotData;
+static void pushSlotData(OperandStack *this, SlotData *slotData) {
+    this->slotList[this->count] = *slotData;
     this->count++;
 }
 

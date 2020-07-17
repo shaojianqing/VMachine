@@ -13,7 +13,7 @@ TARGET = VMachine
 
 TGT = tgt/*
 
-OBJS = tgt/vmachine.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/stringType.o tgt/dataType.o tgt/byteReader.o tgt/class.o tgt/instruction.o tgt/operandStack.o tgt/localVariable.o tgt/stackFrame.o tgt/miniunz.o tgt/unzip.o tgt/ioapi.o
+OBJS = tgt/starter.o tgt/utils.o tgt/vmachine.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/dataType.o tgt/byteReader.o tgt/class.o tgt/instruction.o tgt/operandStack.o tgt/localVariable.o tgt/stackFrame.o tgt/miniunz.o tgt/unzip.o tgt/ioapi.o tgt/descriptor.o tgt/thread.o tgt/instance.o
 
 .PHONY : build clean
 
@@ -23,10 +23,10 @@ clean :
 	 rm -rf $(TARGET) $(TGT)
 
 tgt/miniunz.o : src/minizip/miniunz.c
-	$(CC) $(CCFLAGES) $< -o $@
+	$(CC) $(CCFLAGES) $< -o $@ -Wimplicit-function-declaration
 
-tgt/unzip.o : src/minizip/unzip.c src/minizip/unzip.h
-	$(CC) $(CCFLAGES) $< -o $@
+tgt/unzip.o : src/minizip/unzip.c src/minizip/unzip.h 
+	$(CC) $(CCFLAGES) $< -o $@ -Wincompatible-pointer-types
 
 tgt/ioapi.o : src/minizip/ioapi.c src/minizip/ioapi.h
 	$(CC) $(CCFLAGES) $< -o $@
@@ -34,10 +34,13 @@ tgt/ioapi.o : src/minizip/ioapi.c src/minizip/ioapi.h
 tgt/hashMap.o : src/hashmap/hashMap.c src/hashmap/hashMap.h
 	$(CC) $(CCFLAGES) $< -o $@
 
-tgt/arrayList.o : src/arraylist/arrayList.c src/arraylist/arrayList.h
+tgt/descriptor.o : src/executor/descriptor.c src/executor/descriptor.h
 	$(CC) $(CCFLAGES) $< -o $@
 
-tgt/stringType.o : src/datatype/stringType.c src/datatype/stringType.h
+tgt/thread.o : src/executor/thread.c src/executor/thread.h
+	$(CC) $(CCFLAGES) $< -o $@
+
+tgt/arrayList.o : src/arraylist/arrayList.c src/arraylist/arrayList.h
 	$(CC) $(CCFLAGES) $< -o $@
 
 tgt/dataType.o : src/datatype/dataType.c src/datatype/dataType.h
@@ -47,9 +50,12 @@ tgt/endianSwap.o : src/endian/endianSwap.c src/endian/endianSwap.h
 	$(CC) $(CCFLAGES) $< -o $@
 
 tgt/class.o : src/resolver/class.c src/resolver/class.h
-	$(CC) $(CCFLAGES) $< -o $@	
+	$(CC) $(CCFLAGES) $< -o $@		
 
 tgt/byteReader.o : src/executor/byteReader.c src/executor/byteReader.h
+	$(CC) $(CCFLAGES) $< -o $@
+
+tgt/instance.o : src/executor/instance.c src/executor/instance.h
 	$(CC) $(CCFLAGES) $< -o $@
 
 tgt/instruction.o : src/executor/instruction.c src/executor/instruction.h
@@ -64,8 +70,14 @@ tgt/localVariable.o : src/executor/localVariable.c src/executor/localVariable.h
 tgt/stackFrame.o : src/executor/stackFrame.c src/executor/stackFrame.h
 	$(CC) $(CCFLAGES) $< -o $@
 
-tgt/vmachine.o : src/runtime/vmachine.c
+tgt/vmachine.o : src/runtime/vmachine.c src/runtime/vmachine.h
 	$(CC) $(CCFLAGES) $< -o $@
 
-VMachine : tgt/vmachine.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/stringType.o tgt/dataType.o tgt/byteReader.o tgt/class.o tgt/instruction.o tgt/operandStack.o tgt/localVariable.o tgt/stackFrame.o tgt/miniunz.o tgt/unzip.o tgt/ioapi.o
-	$(CC) $(OBJS) -o $@
+tgt/utils.o : src/utils/utils.c src/utils/utils.h
+	$(CC) $(CCFLAGES) $< -o $@
+
+tgt/starter.o : src/starter.c
+	$(CC) $(CCFLAGES) $< -o $@
+
+VMachine :tgt/starter.o tgt/utils.o tgt/vmachine.o tgt/endianSwap.o tgt/hashMap.o tgt/arrayList.o tgt/dataType.o tgt/byteReader.o tgt/class.o tgt/instruction.o tgt/operandStack.o tgt/localVariable.o tgt/stackFrame.o tgt/miniunz.o tgt/unzip.o tgt/ioapi.o tgt/descriptor.o tgt/thread.o tgt/instance.o
+	$(CC) $(OBJS) -o $@ -lz -lm

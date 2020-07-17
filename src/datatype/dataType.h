@@ -1,7 +1,7 @@
-typedef int (*HashCode)(Object *key);
+typedef int (*HashCode)(char *key);
 
-typedef bool (*EqualFun)(Object *obj1, Object *obj2);
+typedef bool (*EqualFun)(char *obj1, char *obj2);
 
-int StringHashCode(Object *string);
+int StringHashCode(char *string);
 
-bool StringEqualFun(Object *obj1, Object *obj2);
+bool StringEqualFun(char *obj1, char *obj2);

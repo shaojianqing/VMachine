@@ -4,6 +4,8 @@ struct OperandStack {
 
 	u32 count;
 
+    u32 capacity;
+
     SlotData *slotList;
 
     void (*pushInt)(OperandStack *this, int value);
@@ -26,7 +28,7 @@ struct OperandStack {
 
     void* (*popReference)(OperandStack *this);
 
-    void (*pushSlotData)(OperandStack *this, SlotData slotData);
+    void (*pushSlotData)(OperandStack *this, SlotData *slotData);
 
     SlotData* (*popSlotData)(OperandStack *this);
 };

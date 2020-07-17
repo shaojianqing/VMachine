@@ -12,14 +12,9 @@
 #include <time.h>
 #include <errno.h>
 #include <fcntl.h>
-
-#ifdef unix
-# include <unistd.h>
-# include <utime.h>
-#else
-# include <direct.h>
-# include <io.h>
-#endif
+#include <unistd.h>
+#include <utime.h>
+#include <sys/stat.h>
 
 #include "unzip.h"
 
@@ -27,10 +22,6 @@
 #define WRITEBUFFERSIZE (8192)
 #define MAXFILENAME (256)
 
-#ifdef WIN32
-#define USEWIN32IOAPI
-#include "iowin32.h"
-#endif
 /*
   mini unzip, demo of unzip package
 
@@ -51,19 +42,6 @@ void change_file_date(filename,dosdate,tmu_date)
     uLong dosdate;
     tm_unz tmu_date;
 {
-#ifdef WIN32
-  HANDLE hFile;
-  FILETIME ftm,ftLocal,ftCreate,ftLastAcc,ftLastWrite;
-
-  hFile = CreateFile(filename,GENERIC_READ | GENERIC_WRITE,
-                      0,NULL,OPEN_EXISTING,0,NULL);
-  GetFileTime(hFile,&ftCreate,&ftLastAcc,&ftLastWrite);
-  DosDateTimeToFileTime((WORD)(dosdate>>16),(WORD)dosdate,&ftLocal);
-  LocalFileTimeToFileTime(&ftLocal,&ftm);
-  SetFileTime(hFile,&ftm,&ftLastAcc,&ftm);
-  CloseHandle(hFile);
-#else
-#ifdef unix
   struct utimbuf ut;
   struct tm newdate;
   newdate.tm_sec = tmu_date.tm_sec;
@@ -79,8 +57,6 @@ void change_file_date(filename,dosdate,tmu_date)
 
   ut.actime=ut.modtime=mktime(&newdate);
   utime(filename,&ut);
-#endif
-#endif
 }
 
 
@@ -90,14 +66,7 @@ void change_file_date(filename,dosdate,tmu_date)
 int mymkdir(dirname)
     const char* dirname;
 {
-    int ret=0;
-#ifdef WIN32
-    ret = mkdir(dirname);
-#else
-#ifdef unix
-    ret = mkdir (dirname,0775);
-#endif
-#endif
+    int ret = mkdir(dirname,0775);
     return ret;
 }
 
@@ -458,128 +427,4 @@ int do_extract_onefile(uf,filename,opt_extract_without_path,opt_overwrite,passwo
         return 0;
     else
         return 1;
-}
-
-
-int main(argc,argv)
-    int argc;
-    char *argv[];
-{
-    const char *zipfilename=NULL;
-    const char *filename_to_extract=NULL;
-    const char *password=NULL;
-    char filename_try[MAXFILENAME+16] = "";
-    int i;
-    int opt_do_list=0;
-    int opt_do_extract=1;
-    int opt_do_extract_withoutpath=0;
-    int opt_overwrite=0;
-    int opt_extractdir=0;
-    const char *dirname=NULL;
-    unzFile uf=NULL;
-
-    do_banner();
-    if (argc==1)
-    {
-        do_help();
-        return 0;
-    }
-    else
-    {
-        for (i=1;i<argc;i++)
-        {
-            if ((*argv[i])=='-')
-            {
-                const char *p=argv[i]+1;
-
-                while ((*p)!='\0')
-                {
-                    char c=*(p++);;
-                    if ((c=='l') || (c=='L'))
-                        opt_do_list = 1;
-                    if ((c=='v') || (c=='V'))
-                        opt_do_list = 1;
-                    if ((c=='x') || (c=='X'))
-                        opt_do_extract = 1;
-                    if ((c=='e') || (c=='E'))
-                        opt_do_extract = opt_do_extract_withoutpath = 1;
-                    if ((c=='o') || (c=='O'))
-                        opt_overwrite=1;
-                    if ((c=='d') || (c=='D'))
-                    {
-                        opt_extractdir=1;
-                        dirname=argv[i+1];
-                    }
-
-                    if (((c=='p') || (c=='P')) && (i+1<argc))
-                    {
-                        password=argv[i+1];
-                        i++;
-                    }
-                }
-            }
-            else
-            {
-                if (zipfilename == NULL)
-                    zipfilename = argv[i];
-                else if ((filename_to_extract==NULL) && (!opt_extractdir))
-                        filename_to_extract = argv[i] ;
-            }
-        }
-    }
-
-    if (zipfilename!=NULL)
-    {
-
-#        ifdef USEWIN32IOAPI
-        zlib_filefunc_def ffunc;
-#        endif
-
-        strncpy(filename_try, zipfilename,MAXFILENAME-1);
-        /* strncpy doesnt append the trailing NULL, of the string is too long. */
-        filename_try[ MAXFILENAME ] = '\0';
-
-#        ifdef USEWIN32IOAPI
-        fill_win32_filefunc(&ffunc);
-        uf = unzOpen2(zipfilename,&ffunc);
-#        else
-        uf = unzOpen(zipfilename);
-#        endif
-        if (uf==NULL)
-        {
-            strcat(filename_try,".zip");
-#            ifdef USEWIN32IOAPI
-            uf = unzOpen2(filename_try,&ffunc);
-#            else
-            uf = unzOpen(filename_try);
-#            endif
-        }
-    }
-
-    if (uf==NULL)
-    {
-        printf("Cannot open %s or %s.zip\n",zipfilename,zipfilename);
-        return 1;
-    }
-    printf("%s opened\n",filename_try);
-
-    if (opt_do_list==1)
-        return do_list(uf);
-    else if (opt_do_extract==1)
-    {
-        if (opt_extractdir && chdir(dirname)) 
-        {
-          printf("Error changing into %s, aborting\n", dirname);
-          exit(-1);
-        }
-
-        if (filename_to_extract == NULL)
-            return do_extract(uf,opt_do_extract_withoutpath,opt_overwrite,password);
-        else
-            return do_extract_onefile(uf,filename_to_extract,
-                                      opt_do_extract_withoutpath,opt_overwrite,password);
-    }
-    unzCloseCurrentFile(uf);
-
-    return 0;
 }

@@ -1,4 +1,3 @@
-
 #define ACC_PUBLIC      	0x0001
 #define ACC_PRIVATE     	0x0002
 #define ACC_PROTECTED   	0x0004
@@ -24,9 +23,13 @@ typedef struct Field Field;
 
 typedef struct Method Method;
 
+typedef struct Instance Instance;
+
 typedef struct Exception Exception;
 
 typedef struct Attribute Attribute;
+
+typedef struct MethodDescriptor MethodDescriptor;
 
 typedef struct ConstUtf8Info {
 
@@ -231,6 +234,8 @@ struct Method {
 	u16 exceptionTableLength;
 
 	Exception *exceptionList;
+
+	MethodDescriptor *methodDescriptor;
 };
 
 struct Class {
@@ -296,4 +301,6 @@ struct Class {
 	Method* (*findMainMethod)(Class *this);
 };
 
-Class* defineClass(char *classFilename);
+Class* loadClassFromFile(char *filename);
+
+Class* defineClass(byte* classData);
