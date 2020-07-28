@@ -6,8 +6,10 @@
 #include "../common/constants.h"
 #include "../datatype/dataType.h"
 #include "../hashmap/hashMap.h"
+#include "../arraylist/arrayList.h"
 #include "../resolver/class.h"
 #include "../runtime/vmachine.h"
+#include "../utils/utils.h"
 
 #include "dataStructure.h"
 #include "localVariable.h"
@@ -226,768 +228,768 @@
 #define impdep1 		0xfe
 #define impdep2			0xff
 
-static bool nopProcessor(StackFrame *frame);
+static bool nopProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool aconstNullProcessor(StackFrame *frame);
+static bool aconstNullProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool iconstM1Processor(StackFrame *frame);
+static bool iconstM1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool iconst0Processor(StackFrame *frame);
+static bool iconst0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool iconst1Processor(StackFrame *frame);
+static bool iconst1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool iconst2Processor(StackFrame *frame);
+static bool iconst2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool iconst3Processor(StackFrame *frame);
+static bool iconst3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool iconst4Processor(StackFrame *frame);
+static bool iconst4Processor(Instruction *instruction, StackFrame *frame);
 
-static bool iconst5Processor(StackFrame *frame);
+static bool iconst5Processor(Instruction *instruction, StackFrame *frame);
 
-static bool lconst0Processor(StackFrame *frame);
+static bool lconst0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool lconst1Processor(StackFrame *frame);
+static bool lconst1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fconst0Processor(StackFrame *frame);
+static bool fconst0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fconst1Processor(StackFrame *frame);
+static bool fconst1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fconst2Processor(StackFrame *frame);
+static bool fconst2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dconst0Processor(StackFrame *frame);
+static bool dconst0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dconst1Processor(StackFrame *frame);
+static bool dconst1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool bipushProcessor(StackFrame *frame);
+static bool bipushProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool sipushProcessor(StackFrame *frame);
+static bool sipushProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ldcProcessor(StackFrame *frame);
+static bool ldcProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ldcWProcessor(StackFrame *frame);
+static bool ldcWProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ldc2WProcessor(StackFrame *frame);
+static bool ldc2WProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool iloadProcessor(StackFrame *frame);
+static bool iloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lloadProcessor(StackFrame *frame);
+static bool lloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool floadProcessor(StackFrame *frame);
+static bool floadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dloadProcessor(StackFrame *frame);
+static bool dloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool aloadProcessor(StackFrame *frame);
+static bool aloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool iload0Processor(StackFrame *frame);
+static bool iload0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool iload1Processor(StackFrame *frame);
+static bool iload1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool iload2Processor(StackFrame *frame);
+static bool iload2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool iload3Processor(StackFrame *frame);
+static bool iload3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool lload0Prcoessor(StackFrame *frame);
+static bool lload0Prcoessor(Instruction *instruction, StackFrame *frame);
 
-static bool lload1Processor(StackFrame *frame);
+static bool lload1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool lload2Processor(StackFrame *frame);
+static bool lload2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool lload3Processor(StackFrame *frame);
+static bool lload3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fload0Processor(StackFrame *frame);
+static bool fload0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fload1Processor(StackFrame *frame);
+static bool fload1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fload2Processor(StackFrame *frame);
+static bool fload2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fload3Processor(StackFrame *frame);
+static bool fload3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dload0Processor(StackFrame *frame);
+static bool dload0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dload1Processor(StackFrame *frame);
+static bool dload1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dload2Processor(StackFrame *frame);
+static bool dload2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dload3Processor(StackFrame *frame);
+static bool dload3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool aload0Processor(StackFrame *frame);
+static bool aload0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool aload1Processor(StackFrame *frame);
+static bool aload1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool aload2Processor(StackFrame *frame);
+static bool aload2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool aload3Processor(StackFrame *frame);
+static bool aload3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool ialoadProcessor(StackFrame *frame);
+static bool ialoadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool laloadProcessor(StackFrame *frame);
+static bool laloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool faloadProcessor(StackFrame *frame);
+static bool faloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool daloadProcessor(StackFrame *frame);
+static bool daloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool aaloadProcessor(StackFrame *frame);
+static bool aaloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool baloadProcessor(StackFrame *frame);
+static bool baloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool caloadProcessor(StackFrame *frame);
+static bool caloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool saloadProcessor(StackFrame *frame);
+static bool saloadProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool istoreProcessor(StackFrame *frame);
+static bool istoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lstoredProcessor(StackFrame *frame);
+static bool lstoredProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool fstoreProcessor(StackFrame *frame);
+static bool fstoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dstoreProcessor(StackFrame *frame);
+static bool dstoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool astoreProcessor(StackFrame *frame);
+static bool astoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool istore0Processor(StackFrame *frame);
+static bool istore0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool istore1Processor(StackFrame *frame);
+static bool istore1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool istore2Processor(StackFrame *frame);
+static bool istore2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool istore3Processor(StackFrame *frame);
+static bool istore3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool lstore0Processor(StackFrame *frame);
+static bool lstore0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool lstore1Processor(StackFrame *frame);
+static bool lstore1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool lstore2Processor(StackFrame *frame);
+static bool lstore2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool lstore3Processor(StackFrame *frame);
+static bool lstore3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fstore0Processor(StackFrame *frame);
+static bool fstore0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fstore1Processor(StackFrame *frame);
+static bool fstore1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fstore2Processor(StackFrame *frame);
+static bool fstore2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool fstore3Processor(StackFrame *frame);
+static bool fstore3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dstore0Processor(StackFrame *frame);
+static bool dstore0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dstore1Processor(StackFrame *frame);
+static bool dstore1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dstore2Processor(StackFrame *frame);
+static bool dstore2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dstore3Processor(StackFrame *frame);
+static bool dstore3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool astore0Processor(StackFrame *frame);
+static bool astore0Processor(Instruction *instruction, StackFrame *frame);
 
-static bool astore1Processor(StackFrame *frame);
+static bool astore1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool astore2Processor(StackFrame *frame);
+static bool astore2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool astore3Processor(StackFrame *frame);
+static bool astore3Processor(Instruction *instruction, StackFrame *frame);
 
-static bool iastoreProcessor(StackFrame *frame);
+static bool iastoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lastoreProcessor(StackFrame *frame);
+static bool lastoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool fastoreProcessor(StackFrame *frame);
+static bool fastoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dastoreProcessor(StackFrame *frame);
+static bool dastoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool aastoreProcessor(StackFrame *frame);
+static bool aastoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool bastoreProcessor(StackFrame *frame);
+static bool bastoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool castoreProcessor(StackFrame *frame);
+static bool castoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool sastoreProcessor(StackFrame *frame);
+static bool sastoreProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool popProcessor(StackFrame *frame);
+static bool popProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool pop2Processor(StackFrame *frame);
+static bool pop2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dupProcessor(StackFrame *frame);
+static bool dupProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dupX1Processor(StackFrame *frame);
+static bool dupX1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dupX2Processor(StackFrame *frame);
+static bool dupX2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dup2Processor(StackFrame *frame);
+static bool dup2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dup2X1Processor(StackFrame *frame);
+static bool dup2X1Processor(Instruction *instruction, StackFrame *frame);
 
-static bool dup2X2Processor(StackFrame *frame);
+static bool dup2X2Processor(Instruction *instruction, StackFrame *frame);
 
-static bool swapProcessor(StackFrame *frame);
+static bool swapProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool iaddProcessor(StackFrame *frame);
+static bool iaddProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool laddProcessor(StackFrame *frame);
+static bool laddProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool faddProcessor(StackFrame *frame);
+static bool faddProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool daddProcessor(StackFrame *frame);
+static bool daddProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool isubProcessor(StackFrame *frame);
+static bool isubProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lsubProcessor(StackFrame *frame);
+static bool lsubProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool fsubProcessor(StackFrame *frame);
+static bool fsubProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dsubProcessor(StackFrame *frame);
+static bool dsubProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool imulProcessor(StackFrame *frame);
+static bool imulProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lmulProcessor(StackFrame *frame);
+static bool lmulProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool fmulProcessor(StackFrame *frame);
+static bool fmulProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dmulProcessor(StackFrame *frame);
+static bool dmulProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool idivProcessor(StackFrame *frame);
+static bool idivProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ldivProcessor(StackFrame *frame);
+static bool ldivProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool fdivProcessor(StackFrame *frame);
+static bool fdivProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ddivProcessor(StackFrame *frame);
+static bool ddivProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool iremProcessor(StackFrame *frame);
+static bool iremProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lremProcessor(StackFrame *frame);
+static bool lremProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool fremProcessor(StackFrame *frame);
+static bool fremProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dremProcessor(StackFrame *frame);
+static bool dremProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool inegProcessor(StackFrame *frame);
+static bool inegProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lnegProcessor(StackFrame *frame);
+static bool lnegProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool fnegProcessor(StackFrame *frame);
+static bool fnegProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dnegProcessor(StackFrame *frame);
+static bool dnegProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ishlProcessor(StackFrame *frame);
+static bool ishlProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lshlProcessor(StackFrame *frame);
+static bool lshlProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ishrProcessor(StackFrame *frame);
+static bool ishrProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lshrProcessor(StackFrame *frame);
+static bool lshrProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool iushrProcessor(StackFrame *frame);
+static bool iushrProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lushrProcessor(StackFrame *frame);
+static bool lushrProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool iandProcessor(StackFrame *frame);
+static bool iandProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool landProcessor(StackFrame *frame);
+static bool landProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool iorProcessor(StackFrame *frame);
+static bool iorProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lorProcessor(StackFrame *frame);
+static bool lorProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ixorProcessor(StackFrame *frame);
+static bool ixorProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lxorProcessor(StackFrame *frame);
+static bool lxorProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool iincProcessor(StackFrame *frame);
+static bool iincProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool i2lProcessor(StackFrame *frame);
+static bool i2lProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool i2fProcessor(StackFrame *frame);
+static bool i2fProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool i2dProcessor(StackFrame *frame);
+static bool i2dProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool l2iProcessor(StackFrame *frame);
+static bool l2iProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool l2fProcessor(StackFrame *frame);
+static bool l2fProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool l2dProcessor(StackFrame *frame);
+static bool l2dProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool f2iProcessor(StackFrame *frame);
+static bool f2iProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool f2lProcessor(StackFrame *frame);
+static bool f2lProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool f2dProcessor(StackFrame *frame);
+static bool f2dProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool d2iProcessor(StackFrame *frame);
+static bool d2iProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool d2lProcessor(StackFrame *frame);
+static bool d2lProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool d2fProcessor(StackFrame *frame);
+static bool d2fProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool i2bProcessor(StackFrame *frame);
+static bool i2bProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool i2cProcessor(StackFrame *frame);
+static bool i2cProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool i2sProcessor(StackFrame *frame);
+static bool i2sProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lcmpProcessor(StackFrame *frame);
+static bool lcmpProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool fcmplProcessor(StackFrame *frame);
+static bool fcmplProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool fcmpgProcessor(StackFrame *frame);
+static bool fcmpgProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dcmplProcessor(StackFrame *frame);
+static bool dcmplProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dcmpgProcessor(StackFrame *frame);
+static bool dcmpgProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifeqProcessor(StackFrame *frame);
+static bool ifeqProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifneProcessor(StackFrame *frame);
+static bool ifneProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifltProcessor(StackFrame *frame);
+static bool ifltProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifgeProcessor(StackFrame *frame);
+static bool ifgeProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifgtProcessor(StackFrame *frame);
+static bool ifgtProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifleProcessor(StackFrame *frame);
+static bool ifleProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifIcmpeqProcessor(StackFrame *frame);
+static bool ifIcmpeqProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifIcmpneProcessor(StackFrame *frame);
+static bool ifIcmpneProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifIcmpltProcessor(StackFrame *frame);
+static bool ifIcmpltProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifIcmpgeProcessor(StackFrame *frame);
+static bool ifIcmpgeProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifIcmpgtProcessor(StackFrame *frame);
+static bool ifIcmpgtProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifIcmpleProcessor(StackFrame *frame);
+static bool ifIcmpleProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifAcmpeqProcessor(StackFrame *frame);
+static bool ifAcmpeqProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifAcmpneProcessor(StackFrame *frame);
+static bool ifAcmpneProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool gotoProcessor(StackFrame *frame);
+static bool gotoProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool jsrProcessor(StackFrame *frame);
+static bool jsrProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool retProcessor(StackFrame *frame);
+static bool retProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool tableswitchProcessor(StackFrame *frame);
+static bool tableswitchProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lookupswitchProcessor(StackFrame *frame);
+static bool lookupswitchProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ireturnProcessor(StackFrame *frame);
+static bool ireturnProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool lreturnProcessor(StackFrame *frame);
+static bool lreturnProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool freturnProcessor(StackFrame *frame);
+static bool freturnProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool dreturnProcessor(StackFrame *frame);
+static bool dreturnProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool areturnProcessor(StackFrame *frame);
+static bool areturnProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool returnProcessor(StackFrame *frame);
+static bool returnProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool getStaticProcessor(StackFrame *frame);
+static bool getStaticProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool putStaticProcessor(StackFrame *frame);
+static bool putStaticProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool getFieldProcessor(StackFrame *frame);
+static bool getFieldProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool putFieldProcessor(StackFrame *frame);
+static bool putFieldProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool invokeVirtualProcessor(StackFrame *frame);
+static bool invokeVirtualProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool invokeSpecialProcessor(StackFrame *frame);
+static bool invokeSpecialProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool invokeStaticProcessor(StackFrame *frame);
+static bool invokeStaticProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool invokeInterfaceProcessor(StackFrame *frame);
+static bool invokeInterfaceProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool invokeDynamicProcessor(StackFrame *frame);
+static bool invokeDynamicProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool newProcessor(StackFrame *frame);
+static bool newProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool newArrayProcessor(StackFrame *frame);
+static bool newArrayProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool aNewArrayProcessor(StackFrame *frame);
+static bool aNewArrayProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool arrayLengthProcessor(StackFrame *frame);
+static bool arrayLengthProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool athrowProcessor(StackFrame *frame);
+static bool athrowProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool checkCastProcessor(StackFrame *frame);
+static bool checkCastProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool instanceofProcessor(StackFrame *frame);
+static bool instanceofProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool monitorEnterProcessor(StackFrame *frame);
+static bool monitorEnterProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool monitorExitProcessor(StackFrame *frame);
+static bool monitorExitProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool wideProcessor(StackFrame *frame);
+static bool wideProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool multiaNewArrayProcessor(StackFrame *frame);
+static bool multiaNewArrayProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifNullProcessor(StackFrame *frame);
+static bool ifNullProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool ifNonNullProcessor(StackFrame *frame);
+static bool ifNonNullProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool gotoWProcessor(StackFrame *frame);
+static bool gotoWProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool jsrWProcessor(StackFrame *frame);
+static bool jsrWProcessor(Instruction *instruction, StackFrame *frame);
 
-static bool NoOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool NoOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool WideOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool WideOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool IIncOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool IIncOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool BranchOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool BranchOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool Index8OperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool Index8OperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool Index16OperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool Index16OperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool BipushOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool BipushOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool SipushOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool SipushOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool GotoWOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool GotoWOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool NewArrayOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool NewArrayOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool LookupSwitchOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool LookupSwitchOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool TableSwitchOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool TableSwitchOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool InvokeInterfaceOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool InvokeInterfaceOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
-static bool MultiANewArrayOperandFetcher(ByteReader *reader, StackFrame *frame);
+static bool MultiANewArrayOperandFetcher(Instruction *instruction, ByteReader *byteReader);
 
 Instruction instructionTable[] = {
-    {nop, "nop", {0}, 0, 1, nopProcessor, NoOperandFetcher, 0},
-    {aconst_null, "aconst_null", {0}, 0, 1, aconstNullProcessor, NoOperandFetcher, 0},
-    {iconst_m1, "iconst_m1", {0}, 0, 1, iconstM1Processor, NoOperandFetcher, 0},
-    {iconst_0, "iconst_0", {0}, 0, 1, iconst0Processor, NoOperandFetcher, 0},
-    {iconst_1, "iconst_1", {0}, 0, 1, iconst1Processor, NoOperandFetcher, 0},
-    {iconst_2, "iconst_2", {0}, 0, 1, iconst2Processor, NoOperandFetcher, 0},
-    {iconst_3, "iconst_3", {0}, 0, 1, iconst3Processor, NoOperandFetcher, 0},
-    {iconst_4, "iconst_4", {0}, 0, 1, iconst4Processor, NoOperandFetcher, 0},
-    {iconst_5, "iconst_5", {0}, 0, 1, iconst5Processor, NoOperandFetcher, 0},
-    {lconst_0, "lconst_0", {0}, 0, 1, lconst0Processor, NoOperandFetcher, 0},
-    {lconst_1, "lconst_1", {0}, 0, 1, lconst1Processor, NoOperandFetcher, 0},
-    {fconst_0, "fconst_0", {0}, 0, 1, fconst0Processor, NoOperandFetcher, 0},
-    {fconst_1, "fconst_1", {0}, 0, 1, fconst1Processor, NoOperandFetcher, 0},
-    {fconst_2, "fconst_2", {0}, 0, 1, fconst2Processor, NoOperandFetcher, 0},
-    {dconst_0, "dconst_0", {0}, 0, 1, dconst0Processor, NoOperandFetcher, 0},
-    {dconst_1, "dconst_1", {0}, 0, 1, dconst1Processor, NoOperandFetcher, 0},
-    {bipush, "bipush", {0}, 1, 2, bipushProcessor, BipushOperandFetcher, 0},
-    {sipush, "sipush", {0}, 2, 3, sipushProcessor, SipushOperandFetcher, 0},
-    {ldc, "ldc", {0}, 1, 2, ldcProcessor, Index8OperandFetcher, 0},
-    {ldc_w, "ldc_w", {0}, 2, 3, ldcWProcessor, Index16OperandFetcher, 0},
-    {ldc2_w, "ldc2_w", {0}, 2, 3, ldc2WProcessor, Index16OperandFetcher, 0},
-    {iload, "iload", {0}, 1, 2, iloadProcessor, Index8OperandFetcher, 0},
-    {lload, "lload", {0}, 1, 2, lloadProcessor, Index8OperandFetcher, 0},
-    {fload, "fload", {0}, 1, 2, floadProcessor, Index8OperandFetcher, 0},
-    {dload, "dload", {0}, 1, 2, dloadProcessor, Index8OperandFetcher, 0},
-    {aload, "aload", {0}, 1, 2, aloadProcessor, Index8OperandFetcher, 0},
-    {iload_0, "iload_0", {0}, 0, 1, iload0Processor, NoOperandFetcher, 0},
-    {iload_1, "iload_1", {0}, 0, 1, iload1Processor, NoOperandFetcher, 0},
-    {iload_2, "iload_2", {0}, 0, 1, iload2Processor, NoOperandFetcher, 0},
-    {iload_3, "iload_3", {0}, 0, 1, iload3Processor, NoOperandFetcher, 0},
-    {lload_0, "lload_0", {0}, 0, 1, lload0Prcoessor, NoOperandFetcher, 0},
-    {lload_1, "lload_1", {0}, 0, 1, lload1Processor, NoOperandFetcher, 0},
-    {lload_2, "lload_2", {0}, 0, 1, lload2Processor, NoOperandFetcher, 0},
-    {lload_3, "lload_3", {0}, 0, 1, lload3Processor, NoOperandFetcher, 0},
-    {fload_0, "fload_0", {0}, 0, 1, fload0Processor, NoOperandFetcher, 0},
-    {fload_1, "fload_1", {0}, 0, 1, fload1Processor, NoOperandFetcher, 0},
-    {fload_2, "fload_2", {0}, 0, 1, fload2Processor, NoOperandFetcher, 0},
-    {fload_3, "fload_3", {0}, 0, 1, fload3Processor, NoOperandFetcher, 0},
-    {dload_0, "dload_0", {0}, 0, 1, dload0Processor, NoOperandFetcher, 0},
-    {dload_1, "dload_1", {0}, 0, 1, dload1Processor, NoOperandFetcher, 0},
-    {dload_2, "dload_2", {0}, 0, 1, dload2Processor, NoOperandFetcher, 0},
-    {dload_3, "dload_3", {0}, 0, 1, dload3Processor, NoOperandFetcher, 0},
-    {aload_0, "aload_0", {0}, 0, 1, aload0Processor, NoOperandFetcher, 0},
-    {aload_1, "aload_1", {0}, 0, 1, aload1Processor, NoOperandFetcher, 0},
-    {aload_2, "aload_2", {0}, 0, 1, aload2Processor, NoOperandFetcher, 0},
-    {aload_3, "aload_3", {0}, 0, 1, aload3Processor, NoOperandFetcher, 0},
-    {iaload, "iaload", {0}, 0, 1, ialoadProcessor, NoOperandFetcher, 0},
-    {laload, "laload", {0}, 0, 1, laloadProcessor, NoOperandFetcher, 0},
-    {faload, "faload", {0}, 0, 1, faloadProcessor, NoOperandFetcher, 0},
-    {daload, "daload", {0}, 0, 1, daloadProcessor, NoOperandFetcher, 0},
-    {aaload, "aaload", {0}, 0, 1, aaloadProcessor, NoOperandFetcher, 0},
-    {baload, "baload", {0}, 0, 1, baloadProcessor, NoOperandFetcher, 0},
-    {caload, "caload", {0}, 0, 1, caloadProcessor, NoOperandFetcher, 0},
-    {saload, "saload", {0}, 0, 1, saloadProcessor, NoOperandFetcher, 0},
-    {istore, "istore", {0}, 1, 2, istoreProcessor, Index8OperandFetcher, 0},
-    {lstore, "lstore", {0}, 1, 2, lstoredProcessor, Index8OperandFetcher, 0},
-    {fstore, "fstore", {0}, 1, 2, fstoreProcessor, Index8OperandFetcher, 0},
-    {dstore, "dstore", {0}, 1, 2, dstoreProcessor, Index8OperandFetcher, 0},
-    {astore, "astore", {0}, 1, 2, astoreProcessor, Index8OperandFetcher, 0},
-    {istore_0, "istore_0", {0}, 0, 1, istore0Processor, NoOperandFetcher, 0},
-    {istore_1, "istore_1", {0}, 0, 1, istore1Processor, NoOperandFetcher, 0},
-    {istore_2, "istore_2", {0}, 0, 1, istore2Processor, NoOperandFetcher, 0},
-    {istore_3, "istore_3", {0}, 0, 1, istore3Processor, NoOperandFetcher, 0},
-    {lstore_0, "lstore_0", {0}, 0, 1, lstore0Processor, NoOperandFetcher, 0},
-    {lstore_1, "lstore_1", {0}, 0, 1, lstore1Processor, NoOperandFetcher, 0},
-    {lstore_2, "lstore_2", {0}, 0, 1, lstore2Processor, NoOperandFetcher, 0},
-    {lstore_3, "lstore_3", {0}, 0, 1, lstore3Processor, NoOperandFetcher, 0},
-    {fstore_0, "fstore_0", {0}, 0, 1, fstore0Processor, NoOperandFetcher, 0},
-    {fstore_1, "fstore_1", {0}, 0, 1, fstore1Processor, NoOperandFetcher, 0},
-    {fstore_2, "fstore_2", {0}, 0, 1, fstore2Processor, NoOperandFetcher, 0},
-    {fstore_3, "fstore_3", {0}, 0, 1, fstore3Processor, NoOperandFetcher, 0},
-    {dstore_0, "dstore_0", {0}, 0, 1, dstore0Processor, NoOperandFetcher, 0},
-    {dstore_1, "dstore_1", {0}, 0, 1, dstore1Processor, NoOperandFetcher, 0},
-    {dstore_2, "dstore_2", {0}, 0, 1, dstore2Processor, NoOperandFetcher, 0},
-    {dstore_3, "dstore_3", {0}, 0, 1, dstore3Processor, NoOperandFetcher, 0},
-    {astore_0, "astore_0", {0}, 0, 1, astore0Processor, NoOperandFetcher, 0},
-    {astore_1, "astore_1", {0}, 0, 1, astore1Processor, NoOperandFetcher, 0},
-    {astore_2, "astore_2", {0}, 0, 1, astore2Processor, NoOperandFetcher, 0},
-    {astore_3, "astore_3", {0}, 0, 1, astore3Processor, NoOperandFetcher, 0},
-    {iastore, "iastore", {0}, 0, 1, iastoreProcessor, NoOperandFetcher, 0},
-    {lastore, "lastore", {0}, 0, 1, lastoreProcessor, NoOperandFetcher, 0},
-    {fastore, "fastore", {0}, 0, 1, fastoreProcessor, NoOperandFetcher, 0},
-    {dastore, "dastore", {0}, 0, 1, dastoreProcessor, NoOperandFetcher, 0},
-    {aastore, "aastore", {0}, 0, 1, aastoreProcessor, NoOperandFetcher, 0},
-    {bastore, "bastore", {0}, 0, 1, bastoreProcessor, NoOperandFetcher, 0},
-    {castore, "castore", {0}, 0, 1, castoreProcessor, NoOperandFetcher, 0},
-    {sastore, "sastore", {0}, 0, 1, sastoreProcessor, NoOperandFetcher, 0},
-    {pop, "pop", {0}, 0, 1, popProcessor, NoOperandFetcher, 0},
-    {pop2, "pop2", {0}, 0, 1, pop2Processor, NoOperandFetcher, 0},
-    {dup, "dup", {0}, 0, 1, dupProcessor, NoOperandFetcher, 0},
-    {dup_x1, "dup_x1", {0}, 0, 1, dupX1Processor, NoOperandFetcher, 0},
-    {dup_x2, "dup_x2", {0}, 0, 1, dupX2Processor, NoOperandFetcher, 0},
-    {dup2, "dup2", {0}, 0, 1, dup2Processor, NoOperandFetcher, 0},
-    {dup2_x1, "dup2_x1", {0}, 0, 1, dup2X1Processor, NoOperandFetcher, 0},
-    {dup2_x2, "dup2_x2", {0}, 0, 1, dup2X2Processor, NoOperandFetcher, 0},
-    {swap, "swap", {0}, 0, 1, swapProcessor, NoOperandFetcher, 0},
-    {iadd, "iadd", {0}, 0, 1, iaddProcessor, NoOperandFetcher, 0},
-    {ladd, "ladd", {0}, 0, 1, laddProcessor, NoOperandFetcher, 0},
-    {fadd, "fadd", {0}, 0, 1, faddProcessor, NoOperandFetcher, 0},
-    {dadd, "dadd", {0}, 0, 1, daddProcessor, NoOperandFetcher, 0},
-    {isub, "isub", {0}, 0, 1, isubProcessor, NoOperandFetcher, 0},
-    {lsub, "lsub", {0}, 0, 1, lsubProcessor, NoOperandFetcher, 0},
-    {fsub, "fsub", {0}, 0, 1, fsubProcessor, NoOperandFetcher, 0},
-    {dsub, "dsub", {0}, 0, 1, dsubProcessor, NoOperandFetcher, 0},
-    {imul, "imul", {0}, 0, 1, imulProcessor, NoOperandFetcher, 0},
-    {lmul, "lmul", {0}, 0, 1, lmulProcessor, NoOperandFetcher, 0},
-    {fmul, "fmul", {0}, 0, 1, fmulProcessor, NoOperandFetcher, 0},
-    {dmul, "dmul", {0}, 0, 1, dmulProcessor, NoOperandFetcher, 0},
-    {idiv, "idiv", {0}, 0, 1, idivProcessor, NoOperandFetcher, 0},
-    {ldiv, "ldiv", {0}, 0, 1, ldivProcessor, NoOperandFetcher, 0},
-    {fdiv, "fdiv", {0}, 0, 1, fdivProcessor, NoOperandFetcher, 0},
-    {ddiv, "ddiv", {0}, 0, 1, ddivProcessor, NoOperandFetcher, 0},
-    {irem, "irem", {0}, 0, 1, iremProcessor, NoOperandFetcher, 0},
-    {lrem, "lrem", {0}, 0, 1, lremProcessor, NoOperandFetcher, 0},
-    {frem, "frem", {0}, 0, 1, fremProcessor, NoOperandFetcher, 0},
-    {drem, "drem", {0}, 0, 1, dremProcessor, NoOperandFetcher, 0},
-    {ineg, "ineg", {0}, 0, 1, inegProcessor, NoOperandFetcher, 0},
-    {lneg, "lneg", {0}, 0, 1, lnegProcessor, NoOperandFetcher, 0},
-    {fneg, "fneg", {0}, 0, 1, fnegProcessor, NoOperandFetcher, 0},
-    {dneg, "dneg", {0}, 0, 1, dnegProcessor, NoOperandFetcher, 0},
-    {ishl, "ishl", {0}, 0, 1, ishlProcessor, NoOperandFetcher, 0},
-    {lshl, "lshl", {0}, 0, 1, lshlProcessor, NoOperandFetcher, 0},
-    {ishr, "ishr", {0}, 0, 1, ishrProcessor, NoOperandFetcher, 0},
-    {lshr, "lshr", {0}, 0, 1, lshrProcessor, NoOperandFetcher, 0},
-    {iushr, "iushr", {0}, 0, 1, iushrProcessor, NoOperandFetcher, 0},
-    {lushr, "lushr", {0}, 0, 1, lushrProcessor, NoOperandFetcher, 0},
-    {iand, "iand", {0}, 0, 1, iandProcessor, NoOperandFetcher, 0},
-    {land, "land", {0}, 0, 1, landProcessor, NoOperandFetcher, 0},
-    {ior, "ior", {0}, 0, 1, iorProcessor, NoOperandFetcher, 0},
-    {lor, "lor", {0}, 0, 1, lorProcessor, NoOperandFetcher, 0},
-    {ixor, "ixor", {0}, 0, 1, ixorProcessor, NoOperandFetcher, 0},
-    {lxor, "lxor", {0}, 0, 1, lxorProcessor, NoOperandFetcher, 0},
-    {iinc, "iinc", {0}, 0, 1, iincProcessor, NoOperandFetcher, 0},
-    {i2l, "i2l", {0}, 0, 1, i2lProcessor, NoOperandFetcher, 0},
-    {i2f, "i2f", {0}, 0, 1, i2fProcessor, NoOperandFetcher, 0},
-    {i2d, "i2d", {0}, 0, 1, i2dProcessor, NoOperandFetcher, 0},
-    {l2i, "l2i", {0}, 0, 1, l2iProcessor, NoOperandFetcher, 0},
-    {l2f, "l2f", {0}, 0, 1, l2fProcessor, NoOperandFetcher, 0},
-    {l2d, "l2d", {0}, 0, 1, l2dProcessor, NoOperandFetcher, 0},
-    {f2i, "f2i", {0}, 0, 1, f2iProcessor, NoOperandFetcher, 0},
-    {f2l, "f2l", {0}, 0, 1, f2lProcessor, NoOperandFetcher, 0},
-    {f2d, "f2d", {0}, 0, 1, f2dProcessor, NoOperandFetcher, 0},
-    {d2i, "d2i", {0}, 0, 1, d2iProcessor, NoOperandFetcher, 0},
-    {d2l, "d2l", {0}, 0, 1, d2lProcessor, NoOperandFetcher, 0},
-    {d2f, "d2f", {0}, 0, 1, d2fProcessor, NoOperandFetcher, 0},
-    {i2b, "i2b", {0}, 0, 1, i2bProcessor, NoOperandFetcher, 0},
-    {i2c, "i2c", {0}, 0, 1, i2cProcessor, NoOperandFetcher, 0},
-    {i2s, "i2s", {0}, 0, 1, i2sProcessor, NoOperandFetcher, 0},
-    {lcmp, "lcmp", {0}, 0, 1, lcmpProcessor, NoOperandFetcher, 0},
-    {fcmpl, "fcmpl", {0}, 0, 1, fcmplProcessor, NoOperandFetcher, 0},
-    {fcmpg, "fcmpg", {0}, 0, 1, fcmpgProcessor, NoOperandFetcher, 0},
-    {dcmpl, "dcmpl", {0}, 0, 1, dcmplProcessor, NoOperandFetcher, 0},
-    {dcmpg, "dcmpg", {0}, 0, 1, dcmpgProcessor, NoOperandFetcher, 0},
-    {ifeq, "ifeq", {0}, 2, 3, ifeqProcessor, BranchOperandFetcher, 0},
-    {ifne, "ifne", {0}, 2, 3, ifneProcessor, BranchOperandFetcher, 0},
-    {iflt, "iflt", {0}, 2, 3, ifltProcessor, BranchOperandFetcher, 0},
-    {ifge, "ifge", {0}, 2, 3, ifgeProcessor, BranchOperandFetcher, 0},
-    {ifgt, "ifgt", {0}, 2, 3, ifgtProcessor, BranchOperandFetcher, 0},
-    {ifle, "ifle", {0}, 2, 3, ifleProcessor, BranchOperandFetcher, 0},
-    {if_icmpeq, "if_icmpeq", {0}, 2, 3, ifIcmpeqProcessor, BranchOperandFetcher, 0},
-    {if_icmpne, "if_icmpne", {0}, 2, 3, ifIcmpneProcessor, BranchOperandFetcher, 0},
-    {if_icmplt, "if_icmplt", {0}, 2, 3, ifIcmpltProcessor, BranchOperandFetcher, 0},
-    {if_icmpge, "if_icmpge", {0}, 2, 3, ifIcmpgeProcessor, BranchOperandFetcher, 0},
-    {if_icmpgt, "if_icmpgt", {0}, 2, 3, ifIcmpgtProcessor, BranchOperandFetcher, 0},
-    {if_icmple, "if_icmple", {0}, 2, 3, ifIcmpleProcessor, BranchOperandFetcher, 0},
-    {if_acmpeq, "if_acmpeq", {0}, 2, 3, ifAcmpeqProcessor, BranchOperandFetcher, 0},
-    {if_acmpne, "if_acmpne", {0}, 2, 3, ifAcmpneProcessor, BranchOperandFetcher, 0},
-    {goto, "goto", {0}, 2, 3, gotoProcessor, BranchOperandFetcher, 0},
-    {jsr, "jsr", {0}, 2, 3, jsrProcessor, BranchOperandFetcher, 0},
-    {ret, "ret", {0}, 1, 2, retProcessor, BranchOperandFetcher, 0},
-    {tableswitch, "tableswitch", {0}, 15, 16, tableswitchProcessor, TableSwitchOperandFetcher, 0},
-    {lookupswitch, "lookupswitch", {0}, 16, 17, lookupswitchProcessor, LookupSwitchOperandFetcher, 0},
-    {ireturn, "ireturn", {0}, 0, 1, ireturnProcessor, NoOperandFetcher, 0},
-    {lreturn, "lreturn", {0}, 0, 1, lreturnProcessor, NoOperandFetcher, 0},
-    {freturn, "freturn", {0}, 0, 1, freturnProcessor, NoOperandFetcher, 0},
-    {dreturn, "dreturn", {0}, 0, 1, dreturnProcessor, NoOperandFetcher, 0},
-    {areturn, "areturn", {0}, 0, 1, areturnProcessor, NoOperandFetcher, 0},
-    {nreturn, "nreturn", {0}, 0, 1, returnProcessor, NoOperandFetcher, 0},
-    {getstatic, "getstatic", {0}, 2, 3, getStaticProcessor, Index16OperandFetcher, 0},
-    {putstatic, "putstatic", {0}, 2, 3, putStaticProcessor, Index16OperandFetcher, 0},
-    {getfield, "getfield", {0}, 2, 3, getFieldProcessor, Index16OperandFetcher, 0},
-    {putfield, "putfield", {0}, 2, 3, putFieldProcessor, Index16OperandFetcher, 0},
-    {invokevirtual, "invokevirtual", {0}, 2, 3, invokeVirtualProcessor, Index16OperandFetcher, 0},
-    {invokespecial, "invokespecial", {0}, 2, 3, invokeSpecialProcessor, Index16OperandFetcher, 0},
-    {invokestatic, "invokestatic", {0}, 2, 3, invokeStaticProcessor, Index16OperandFetcher, 0},
-    {invokeinterface, "invokeinterface", {0}, 2, 3, invokeInterfaceProcessor, InvokeInterfaceOperandFetcher, 0},
-    {invokedynamic, "invokedynamic", {0}, 2, 3, invokeDynamicProcessor, Index16OperandFetcher, 0},
-    {new, "new", {0}, 2, 3, newProcessor, Index16OperandFetcher, 0},
-    {newarray, "newarray", {0}, 1, 2, newArrayProcessor, NewArrayOperandFetcher, 0},
-    {anewarray, "anewarray", {0}, 2, 3, aNewArrayProcessor, Index16OperandFetcher, 0},
-    {arraylength, "arraylength", {0}, 0, 1, arrayLengthProcessor, NoOperandFetcher, 0},
-    {athrow, "athrow", {0}, 0, 1, athrowProcessor, NoOperandFetcher, 0},
-    {checkcast, "checkcast", {0}, 2, 3, checkCastProcessor, Index16OperandFetcher, 0},
-    {instanceof, "instanceof", {0}, 2, 3, instanceofProcessor, Index16OperandFetcher, 0},
-    {monitorenter, "monitorenter", {0}, 0, 1, monitorEnterProcessor, NoOperandFetcher, 0},
-    {monitorexit, "monitorexit", {0}, 0, 1, monitorExitProcessor, NoOperandFetcher, 0},
-    {wide, "wide", {0}, 17, 18, wideProcessor, WideOperandFetcher, 0},
-    {multianewarray, "multianewarray", {0}, 3, 4, multiaNewArrayProcessor, MultiANewArrayOperandFetcher, 0},
-    {ifnull, "ifnull", {0}, 2, 3, ifNullProcessor, BranchOperandFetcher, 0},
-    {ifnonnull, "ifnonnull", {0}, 2, 3, ifNonNullProcessor, BranchOperandFetcher, 0},
-    {goto_w, "goto_w", {0}, 4, 5, gotoWProcessor, GotoWOperandFetcher, 0},
-    {jsr_w, "jsr_w", {0}, 4, 5, jsrWProcessor, BranchOperandFetcher, 0}
+    {nop, "nop", {0}, nopProcessor, NoOperandFetcher},
+    {aconst_null, "aconst_null", {0}, aconstNullProcessor, NoOperandFetcher},
+    {iconst_m1, "iconst_m1", {0}, iconstM1Processor, NoOperandFetcher},
+    {iconst_0, "iconst_0", {0}, iconst0Processor, NoOperandFetcher},
+    {iconst_1, "iconst_1", {0}, iconst1Processor, NoOperandFetcher},
+    {iconst_2, "iconst_2", {0}, iconst2Processor, NoOperandFetcher},
+    {iconst_3, "iconst_3", {0}, iconst3Processor, NoOperandFetcher},
+    {iconst_4, "iconst_4", {0}, iconst4Processor, NoOperandFetcher},
+    {iconst_5, "iconst_5", {0}, iconst5Processor, NoOperandFetcher},
+    {lconst_0, "lconst_0", {0}, lconst0Processor, NoOperandFetcher},
+    {lconst_1, "lconst_1", {0}, lconst1Processor, NoOperandFetcher},
+    {fconst_0, "fconst_0", {0}, fconst0Processor, NoOperandFetcher},
+    {fconst_1, "fconst_1", {0}, fconst1Processor, NoOperandFetcher},
+    {fconst_2, "fconst_2", {0}, fconst2Processor, NoOperandFetcher},
+    {dconst_0, "dconst_0", {0}, dconst0Processor, NoOperandFetcher},
+    {dconst_1, "dconst_1", {0}, dconst1Processor, NoOperandFetcher},
+    {bipush, "bipush", {0}, bipushProcessor, BipushOperandFetcher},
+    {sipush, "sipush", {0}, sipushProcessor, SipushOperandFetcher},
+    {ldc, "ldc", {0}, ldcProcessor, Index8OperandFetcher},
+    {ldc_w, "ldc_w", {0}, ldcWProcessor, Index16OperandFetcher},
+    {ldc2_w, "ldc2_w", {0}, ldc2WProcessor, Index16OperandFetcher},
+    {iload, "iload", {0}, iloadProcessor, Index8OperandFetcher},
+    {lload, "lload", {0}, lloadProcessor, Index8OperandFetcher},
+    {fload, "fload", {0}, floadProcessor, Index8OperandFetcher},
+    {dload, "dload", {0}, dloadProcessor, Index8OperandFetcher},
+    {aload, "aload", {0}, aloadProcessor, Index8OperandFetcher},
+    {iload_0, "iload_0", {0}, iload0Processor, NoOperandFetcher},
+    {iload_1, "iload_1", {0}, iload1Processor, NoOperandFetcher},
+    {iload_2, "iload_2", {0}, iload2Processor, NoOperandFetcher},
+    {iload_3, "iload_3", {0}, iload3Processor, NoOperandFetcher},
+    {lload_0, "lload_0", {0}, lload0Prcoessor, NoOperandFetcher},
+    {lload_1, "lload_1", {0}, lload1Processor, NoOperandFetcher},
+    {lload_2, "lload_2", {0}, lload2Processor, NoOperandFetcher},
+    {lload_3, "lload_3", {0}, lload3Processor, NoOperandFetcher},
+    {fload_0, "fload_0", {0}, fload0Processor, NoOperandFetcher},
+    {fload_1, "fload_1", {0}, fload1Processor, NoOperandFetcher},
+    {fload_2, "fload_2", {0}, fload2Processor, NoOperandFetcher},
+    {fload_3, "fload_3", {0}, fload3Processor, NoOperandFetcher},
+    {dload_0, "dload_0", {0}, dload0Processor, NoOperandFetcher},
+    {dload_1, "dload_1", {0}, dload1Processor, NoOperandFetcher},
+    {dload_2, "dload_2", {0}, dload2Processor, NoOperandFetcher},
+    {dload_3, "dload_3", {0}, dload3Processor, NoOperandFetcher},
+    {aload_0, "aload_0", {0}, aload0Processor, NoOperandFetcher},
+    {aload_1, "aload_1", {0}, aload1Processor, NoOperandFetcher},
+    {aload_2, "aload_2", {0}, aload2Processor, NoOperandFetcher},
+    {aload_3, "aload_3", {0}, aload3Processor, NoOperandFetcher},
+    {iaload, "iaload", {0}, ialoadProcessor, NoOperandFetcher},
+    {laload, "laload", {0}, laloadProcessor, NoOperandFetcher},
+    {faload, "faload", {0}, faloadProcessor, NoOperandFetcher},
+    {daload, "daload", {0}, daloadProcessor, NoOperandFetcher},
+    {aaload, "aaload", {0}, aaloadProcessor, NoOperandFetcher},
+    {baload, "baload", {0}, baloadProcessor, NoOperandFetcher},
+    {caload, "caload", {0}, caloadProcessor, NoOperandFetcher},
+    {saload, "saload", {0}, saloadProcessor, NoOperandFetcher},
+    {istore, "istore", {0}, istoreProcessor, Index8OperandFetcher},
+    {lstore, "lstore", {0}, lstoredProcessor, Index8OperandFetcher},
+    {fstore, "fstore", {0}, fstoreProcessor, Index8OperandFetcher},
+    {dstore, "dstore", {0}, dstoreProcessor, Index8OperandFetcher},
+    {astore, "astore", {0}, astoreProcessor, Index8OperandFetcher},
+    {istore_0, "istore_0", {0}, istore0Processor, NoOperandFetcher},
+    {istore_1, "istore_1", {0}, istore1Processor, NoOperandFetcher},
+    {istore_2, "istore_2", {0}, istore2Processor, NoOperandFetcher},
+    {istore_3, "istore_3", {0}, istore3Processor, NoOperandFetcher},
+    {lstore_0, "lstore_0", {0}, lstore0Processor, NoOperandFetcher},
+    {lstore_1, "lstore_1", {0}, lstore1Processor, NoOperandFetcher},
+    {lstore_2, "lstore_2", {0}, lstore2Processor, NoOperandFetcher},
+    {lstore_3, "lstore_3", {0}, lstore3Processor, NoOperandFetcher},
+    {fstore_0, "fstore_0", {0}, fstore0Processor, NoOperandFetcher},
+    {fstore_1, "fstore_1", {0}, fstore1Processor, NoOperandFetcher},
+    {fstore_2, "fstore_2", {0}, fstore2Processor, NoOperandFetcher},
+    {fstore_3, "fstore_3", {0}, fstore3Processor, NoOperandFetcher},
+    {dstore_0, "dstore_0", {0}, dstore0Processor, NoOperandFetcher},
+    {dstore_1, "dstore_1", {0}, dstore1Processor, NoOperandFetcher},
+    {dstore_2, "dstore_2", {0}, dstore2Processor, NoOperandFetcher},
+    {dstore_3, "dstore_3", {0}, dstore3Processor, NoOperandFetcher},
+    {astore_0, "astore_0", {0}, astore0Processor, NoOperandFetcher},
+    {astore_1, "astore_1", {0}, astore1Processor, NoOperandFetcher},
+    {astore_2, "astore_2", {0}, astore2Processor, NoOperandFetcher},
+    {astore_3, "astore_3", {0}, astore3Processor, NoOperandFetcher},
+    {iastore, "iastore", {0}, iastoreProcessor, NoOperandFetcher},
+    {lastore, "lastore", {0}, lastoreProcessor, NoOperandFetcher},
+    {fastore, "fastore", {0}, fastoreProcessor, NoOperandFetcher},
+    {dastore, "dastore", {0}, dastoreProcessor, NoOperandFetcher},
+    {aastore, "aastore", {0}, aastoreProcessor, NoOperandFetcher},
+    {bastore, "bastore", {0}, bastoreProcessor, NoOperandFetcher},
+    {castore, "castore", {0}, castoreProcessor, NoOperandFetcher},
+    {sastore, "sastore", {0}, sastoreProcessor, NoOperandFetcher},
+    {pop, "pop", {0}, popProcessor, NoOperandFetcher},
+    {pop2, "pop2", {0}, pop2Processor, NoOperandFetcher},
+    {dup, "dup", {0}, dupProcessor, NoOperandFetcher},
+    {dup_x1, "dup_x1", {0}, dupX1Processor, NoOperandFetcher},
+    {dup_x2, "dup_x2", {0}, dupX2Processor, NoOperandFetcher},
+    {dup2, "dup2", {0}, dup2Processor, NoOperandFetcher},
+    {dup2_x1, "dup2_x1", {0}, dup2X1Processor, NoOperandFetcher},
+    {dup2_x2, "dup2_x2", {0}, dup2X2Processor, NoOperandFetcher},
+    {swap, "swap", {0}, swapProcessor, NoOperandFetcher},
+    {iadd, "iadd", {0}, iaddProcessor, NoOperandFetcher},
+    {ladd, "ladd", {0}, laddProcessor, NoOperandFetcher},
+    {fadd, "fadd", {0}, faddProcessor, NoOperandFetcher},
+    {dadd, "dadd", {0}, daddProcessor, NoOperandFetcher},
+    {isub, "isub", {0}, isubProcessor, NoOperandFetcher},
+    {lsub, "lsub", {0}, lsubProcessor, NoOperandFetcher},
+    {fsub, "fsub", {0}, fsubProcessor, NoOperandFetcher},
+    {dsub, "dsub", {0}, dsubProcessor, NoOperandFetcher},
+    {imul, "imul", {0}, imulProcessor, NoOperandFetcher},
+    {lmul, "lmul", {0}, lmulProcessor, NoOperandFetcher},
+    {fmul, "fmul", {0}, fmulProcessor, NoOperandFetcher},
+    {dmul, "dmul", {0}, dmulProcessor, NoOperandFetcher},
+    {idiv, "idiv", {0}, idivProcessor, NoOperandFetcher},
+    {ldiv, "ldiv", {0}, ldivProcessor, NoOperandFetcher},
+    {fdiv, "fdiv", {0}, fdivProcessor, NoOperandFetcher},
+    {ddiv, "ddiv", {0}, ddivProcessor, NoOperandFetcher},
+    {irem, "irem", {0}, iremProcessor, NoOperandFetcher},
+    {lrem, "lrem", {0}, lremProcessor, NoOperandFetcher},
+    {frem, "frem", {0}, fremProcessor, NoOperandFetcher},
+    {drem, "drem", {0}, dremProcessor, NoOperandFetcher},
+    {ineg, "ineg", {0}, inegProcessor, NoOperandFetcher},
+    {lneg, "lneg", {0}, lnegProcessor, NoOperandFetcher},
+    {fneg, "fneg", {0}, fnegProcessor, NoOperandFetcher},
+    {dneg, "dneg", {0}, dnegProcessor, NoOperandFetcher},
+    {ishl, "ishl", {0}, ishlProcessor, NoOperandFetcher},
+    {lshl, "lshl", {0}, lshlProcessor, NoOperandFetcher},
+    {ishr, "ishr", {0}, ishrProcessor, NoOperandFetcher},
+    {lshr, "lshr", {0}, lshrProcessor, NoOperandFetcher},
+    {iushr, "iushr", {0}, iushrProcessor, NoOperandFetcher},
+    {lushr, "lushr", {0}, lushrProcessor, NoOperandFetcher},
+    {iand, "iand", {0}, iandProcessor, NoOperandFetcher},
+    {land, "land", {0}, landProcessor, NoOperandFetcher},
+    {ior, "ior", {0}, iorProcessor, NoOperandFetcher},
+    {lor, "lor", {0}, lorProcessor, NoOperandFetcher},
+    {ixor, "ixor", {0}, ixorProcessor, NoOperandFetcher},
+    {lxor, "lxor", {0}, lxorProcessor, NoOperandFetcher},
+    {iinc, "iinc", {0}, iincProcessor, IIncOperandFetcher},
+    {i2l, "i2l", {0}, i2lProcessor, NoOperandFetcher},
+    {i2f, "i2f", {0}, i2fProcessor, NoOperandFetcher},
+    {i2d, "i2d", {0}, i2dProcessor, NoOperandFetcher},
+    {l2i, "l2i", {0}, l2iProcessor, NoOperandFetcher},
+    {l2f, "l2f", {0}, l2fProcessor, NoOperandFetcher},
+    {l2d, "l2d", {0}, l2dProcessor, NoOperandFetcher},
+    {f2i, "f2i", {0}, f2iProcessor, NoOperandFetcher},
+    {f2l, "f2l", {0}, f2lProcessor, NoOperandFetcher},
+    {f2d, "f2d", {0}, f2dProcessor, NoOperandFetcher},
+    {d2i, "d2i", {0}, d2iProcessor, NoOperandFetcher},
+    {d2l, "d2l", {0}, d2lProcessor, NoOperandFetcher},
+    {d2f, "d2f", {0}, d2fProcessor, NoOperandFetcher},
+    {i2b, "i2b", {0}, i2bProcessor, NoOperandFetcher},
+    {i2c, "i2c", {0}, i2cProcessor, NoOperandFetcher},
+    {i2s, "i2s", {0}, i2sProcessor, NoOperandFetcher},
+    {lcmp, "lcmp", {0}, lcmpProcessor, NoOperandFetcher},
+    {fcmpl, "fcmpl", {0}, fcmplProcessor, NoOperandFetcher},
+    {fcmpg, "fcmpg", {0}, fcmpgProcessor, NoOperandFetcher},
+    {dcmpl, "dcmpl", {0}, dcmplProcessor, NoOperandFetcher},
+    {dcmpg, "dcmpg", {0}, dcmpgProcessor, NoOperandFetcher},
+    {ifeq, "ifeq", {0}, ifeqProcessor, BranchOperandFetcher},
+    {ifne, "ifne", {0}, ifneProcessor, BranchOperandFetcher},
+    {iflt, "iflt", {0}, ifltProcessor, BranchOperandFetcher},
+    {ifge, "ifge", {0}, ifgeProcessor, BranchOperandFetcher},
+    {ifgt, "ifgt", {0}, ifgtProcessor, BranchOperandFetcher},
+    {ifle, "ifle", {0}, ifleProcessor, BranchOperandFetcher},
+    {if_icmpeq, "if_icmpeq", {0}, ifIcmpeqProcessor, BranchOperandFetcher},
+    {if_icmpne, "if_icmpne", {0}, ifIcmpneProcessor, BranchOperandFetcher},
+    {if_icmplt, "if_icmplt", {0}, ifIcmpltProcessor, BranchOperandFetcher},
+    {if_icmpge, "if_icmpge", {0}, ifIcmpgeProcessor, BranchOperandFetcher},
+    {if_icmpgt, "if_icmpgt", {0}, ifIcmpgtProcessor, BranchOperandFetcher},
+    {if_icmple, "if_icmple", {0}, ifIcmpleProcessor, BranchOperandFetcher},
+    {if_acmpeq, "if_acmpeq", {0}, ifAcmpeqProcessor, BranchOperandFetcher},
+    {if_acmpne, "if_acmpne", {0}, ifAcmpneProcessor, BranchOperandFetcher},
+    {goto, "goto", {0}, gotoProcessor, BranchOperandFetcher},
+    {jsr, "jsr", {0}, jsrProcessor, BranchOperandFetcher},
+    {ret, "ret", {0}, retProcessor, BranchOperandFetcher},
+    {tableswitch, "tableswitch", {0}, tableswitchProcessor, TableSwitchOperandFetcher},
+    {lookupswitch, "lookupswitch", {0}, lookupswitchProcessor, LookupSwitchOperandFetcher},
+    {ireturn, "ireturn", {0}, ireturnProcessor, NoOperandFetcher},
+    {lreturn, "lreturn", {0}, lreturnProcessor, NoOperandFetcher},
+    {freturn, "freturn", {0}, freturnProcessor, NoOperandFetcher},
+    {dreturn, "dreturn", {0}, dreturnProcessor, NoOperandFetcher},
+    {areturn, "areturn", {0}, areturnProcessor, NoOperandFetcher},
+    {nreturn, "nreturn", {0}, returnProcessor, NoOperandFetcher},
+    {getstatic, "getstatic", {0}, getStaticProcessor, Index16OperandFetcher},
+    {putstatic, "putstatic", {0}, putStaticProcessor, Index16OperandFetcher},
+    {getfield, "getfield", {0}, getFieldProcessor, Index16OperandFetcher},
+    {putfield, "putfield", {0}, putFieldProcessor, Index16OperandFetcher},
+    {invokevirtual, "invokevirtual", {0}, invokeVirtualProcessor, Index16OperandFetcher},
+    {invokespecial, "invokespecial", {0}, invokeSpecialProcessor, Index16OperandFetcher},
+    {invokestatic, "invokestatic", {0}, invokeStaticProcessor, Index16OperandFetcher},
+    {invokeinterface, "invokeinterface", {0}, invokeInterfaceProcessor, InvokeInterfaceOperandFetcher},
+    {invokedynamic, "invokedynamic", {0}, invokeDynamicProcessor, Index16OperandFetcher},
+    {new, "new", {0}, newProcessor, Index16OperandFetcher},
+    {newarray, "newarray", {0}, newArrayProcessor, NewArrayOperandFetcher},
+    {anewarray, "anewarray", {0}, aNewArrayProcessor, Index16OperandFetcher},
+    {arraylength, "arraylength", {0}, arrayLengthProcessor, NoOperandFetcher},
+    {athrow, "athrow", {0}, athrowProcessor, NoOperandFetcher},
+    {checkcast, "checkcast", {0}, checkCastProcessor, Index16OperandFetcher},
+    {instanceof, "instanceof", {0}, instanceofProcessor, Index16OperandFetcher},
+    {monitorenter, "monitorenter", {0}, monitorEnterProcessor, NoOperandFetcher},
+    {monitorexit, "monitorexit", {0}, monitorExitProcessor, NoOperandFetcher},
+    {wide, "wide", {0}, wideProcessor, WideOperandFetcher},
+    {multianewarray, "multianewarray", {0}, multiaNewArrayProcessor, MultiANewArrayOperandFetcher},
+    {ifnull, "ifnull", {0}, ifNullProcessor, BranchOperandFetcher},
+    {ifnonnull, "ifnonnull", {0}, ifNonNullProcessor, BranchOperandFetcher},
+    {goto_w, "goto_w", {0}, gotoWProcessor, GotoWOperandFetcher},
+    {jsr_w, "jsr_w", {0}, jsrWProcessor, BranchOperandFetcher}
 };
 
 Instruction *getInstructionByCode(u8 opercode) {
     return &instructionTable[opercode];
 }
 
-static bool nopProcessor(StackFrame *frame) {
+static bool nopProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool aconstNullProcessor(StackFrame *frame) {
+static bool aconstNullProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushReference(operandStack, NULL);
     return true;
 }
 
-static bool iconstM1Processor(StackFrame *frame) {
+static bool iconstM1Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushInt(operandStack, -1);
     return true;
 }
 
-static bool iconst0Processor(StackFrame *frame) {
+static bool iconst0Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushInt(operandStack, 0);
     return true;
 }
 
-static bool iconst1Processor(StackFrame *frame) {
+static bool iconst1Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushInt(operandStack, 1);
     return true;
 }
 
-static bool iconst2Processor(StackFrame *frame) {
+static bool iconst2Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushInt(operandStack, 2);
     return true;
 }
 
-static bool iconst3Processor(StackFrame *frame) {
+static bool iconst3Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushInt(operandStack, 3);
     return true;
 }
 
-static bool iconst4Processor(StackFrame *frame) {
+static bool iconst4Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushInt(operandStack, 4);
     return true;
 }
 
-static bool iconst5Processor(StackFrame *frame) {
+static bool iconst5Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushInt(operandStack, 5);
     return true;
 }
 
-static bool lconst0Processor(StackFrame *frame) {
+static bool lconst0Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushLong(operandStack, 0);
     return true;
 }
 
-static bool lconst1Processor(StackFrame *frame) {
+static bool lconst1Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushLong(operandStack, 1);
     return true;
 }
 
-static bool fconst0Processor(StackFrame *frame) {
+static bool fconst0Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushFloat(operandStack, 0.0);
     return true;
 }
 
-static bool fconst1Processor(StackFrame *frame) {
+static bool fconst1Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushFloat(operandStack, 1.0);
     return true;
 }
 
-static bool fconst2Processor(StackFrame *frame) {
+static bool fconst2Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushFloat(operandStack, 2.0);
     return true;
 }
 
-static bool dconst0Processor(StackFrame *frame) {
+static bool dconst0Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushDouble(operandStack, 0.0);
     return true;
 }
 
-static bool dconst1Processor(StackFrame *frame) {
+static bool dconst1Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushDouble(operandStack, 1.0);
     return true;
 }
 
-static bool bipushProcessor(StackFrame *frame) {
-    int value = frame->operandStore.bipushOperand.value;
+static bool bipushProcessor(Instruction *instruction, StackFrame *frame) {
+    int value = instruction->operandStore.bipushOperand.value;
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushInt(operandStack, value);
     return true;
 }
 
-static bool sipushProcessor(StackFrame *frame) {
-    int value = frame->operandStore.sipushOperand.value;
+static bool sipushProcessor(Instruction *instruction, StackFrame *frame) {
+    int value = instruction->operandStore.sipushOperand.value;
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushInt(operandStack, value);
     return true;
 }
 
-static bool ldcProcessor(StackFrame *frame) {
+static bool ldcProcessor(Instruction *instruction, StackFrame *frame) {
 
     return true;
 }
 
-static bool ldcWProcessor(StackFrame *frame) {
+static bool ldcWProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool ldc2WProcessor(StackFrame *frame) {
+static bool ldc2WProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     Class *class = frame->method->class;
-    u32 index = frame->operandStore.index16Operand.index;
+    u32 index = instruction->operandStore.index16Operand.index;
     ConstPool *constant = class->getConstant(class, index);
     if (constant->type == CONSTANT_Long) {
         ConstLongInfo *constLongInfo = (ConstLongInfo *)constant->value;
@@ -1051,150 +1053,150 @@ static bool aloadProcess(StackFrame *frame, u32 index) {
     return true;
 }
 
-static bool iloadProcessor(StackFrame *frame) {
-    OperandStore operandStore = frame->operandStore;
+static bool iloadProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStore operandStore = instruction->operandStore;
     Index8Operand index8Operand = operandStore.index8Operand;
     
     return iloadProcess(frame, index8Operand.index);
 }
 
-static bool lloadProcessor(StackFrame *frame) {
-    OperandStore operandStore = frame->operandStore;
+static bool lloadProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStore operandStore = instruction->operandStore;
     Index8Operand index8Operand = operandStore.index8Operand;
     
     return lloadProcess(frame, index8Operand.index);
 }
 
-static bool floadProcessor(StackFrame *frame) {
-    OperandStore operandStore = frame->operandStore;
+static bool floadProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStore operandStore = instruction->operandStore;
     Index8Operand index8Operand = operandStore.index8Operand;
     
     return floadProcess(frame, index8Operand.index);
 }
 
-static bool dloadProcessor(StackFrame *frame) {
-    OperandStore operandStore = frame->operandStore;
+static bool dloadProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStore operandStore = instruction->operandStore;
     Index8Operand index8Operand = operandStore.index8Operand;
     
     return dloadProcess(frame, index8Operand.index);
 }
 
-static bool aloadProcessor(StackFrame *frame) {
-    OperandStore operandStore = frame->operandStore;
+static bool aloadProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStore operandStore = instruction->operandStore;
     Index8Operand index8Operand = operandStore.index8Operand;
     
     return aloadProcess(frame, index8Operand.index);
 }
 
-static bool iload0Processor(StackFrame *frame) {
+static bool iload0Processor(Instruction *instruction, StackFrame *frame) {
     return iloadProcess(frame, 0);
 }
 
-static bool iload1Processor(StackFrame *frame) {
+static bool iload1Processor(Instruction *instruction, StackFrame *frame) {
     return iloadProcess(frame, 1);
 }
 
-static bool iload2Processor(StackFrame *frame) {
+static bool iload2Processor(Instruction *instruction, StackFrame *frame) {
     return iloadProcess(frame, 2);
 }
 
-static bool iload3Processor(StackFrame *frame) {
+static bool iload3Processor(Instruction *instruction, StackFrame *frame) {
     return iloadProcess(frame, 3);
 }
 
-static bool lload0Prcoessor(StackFrame *frame) {
+static bool lload0Prcoessor(Instruction *instruction, StackFrame *frame) {
     return lloadProcess(frame, 0);
 }
 
-static bool lload1Processor(StackFrame *frame) {
+static bool lload1Processor(Instruction *instruction, StackFrame *frame) {
     return lloadProcess(frame, 1);
 }
 
-static bool lload2Processor(StackFrame *frame) {
+static bool lload2Processor(Instruction *instruction, StackFrame *frame) {
     return lloadProcess(frame, 2);
 }
 
-static bool lload3Processor(StackFrame *frame) {
+static bool lload3Processor(Instruction *instruction, StackFrame *frame) {
     return lloadProcess(frame, 3);
 }
 
-static bool fload0Processor(StackFrame *frame) {
+static bool fload0Processor(Instruction *instruction, StackFrame *frame) {
     return floadProcess(frame, 0);
 }
 
-static bool fload1Processor(StackFrame *frame) {
+static bool fload1Processor(Instruction *instruction, StackFrame *frame) {
     return floadProcess(frame, 1);
 }
 
-static bool fload2Processor(StackFrame *frame) {
+static bool fload2Processor(Instruction *instruction, StackFrame *frame) {
     return floadProcess(frame, 2);
 }
 
-static bool fload3Processor(StackFrame *frame) {
+static bool fload3Processor(Instruction *instruction, StackFrame *frame) {
     return floadProcess(frame, 3);
 }
 
-static bool dload0Processor(StackFrame *frame) {
+static bool dload0Processor(Instruction *instruction, StackFrame *frame) {
     return dloadProcess(frame, 0);
 }
 
-static bool dload1Processor(StackFrame *frame) {
+static bool dload1Processor(Instruction *instruction, StackFrame *frame) {
     return dloadProcess(frame, 1);
 }
 
-static bool dload2Processor(StackFrame *frame) {
+static bool dload2Processor(Instruction *instruction, StackFrame *frame) {
     return dloadProcess(frame, 2);
 }
 
-static bool dload3Processor(StackFrame *frame) {
+static bool dload3Processor(Instruction *instruction, StackFrame *frame) {
     return dloadProcess(frame, 3);
 }
 
-static bool aload0Processor(StackFrame *frame) {
+static bool aload0Processor(Instruction *instruction, StackFrame *frame) {
     return aloadProcess(frame, 0);
 }
 
-static bool aload1Processor(StackFrame *frame) {
+static bool aload1Processor(Instruction *instruction, StackFrame *frame) {
     return aloadProcess(frame, 1);
 }
 
-static bool aload2Processor(StackFrame *frame) {
+static bool aload2Processor(Instruction *instruction, StackFrame *frame) {
    return aloadProcess(frame, 2);
 }
 
-static bool aload3Processor(StackFrame *frame) {
+static bool aload3Processor(Instruction *instruction, StackFrame *frame) {
     return aloadProcess(frame, 3);
 }
 
-static bool ialoadProcessor(StackFrame *frame) {
+static bool ialoadProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool laloadProcessor(StackFrame *frame) {
+static bool laloadProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool faloadProcessor(StackFrame *frame) {
+static bool faloadProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool daloadProcessor(StackFrame *frame) {
+static bool daloadProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool aaloadProcessor(StackFrame *frame) {
+static bool aaloadProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool baloadProcessor(StackFrame *frame) {
+static bool baloadProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool caloadProcessor(StackFrame *frame) {
+static bool caloadProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool saloadProcessor(StackFrame *frame) {
+static bool saloadProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
@@ -1204,15 +1206,13 @@ static bool istoreProcess(StackFrame *frame, u32 index) {
 
     LocalVariables *localVariables = frame->localVariables;
     localVariables->setInt(localVariables, index, value);
-
     return true;
 }
 
-static bool istoreProcessor(StackFrame *frame) {
-    OperandStore operandStore = frame->operandStore;
+static bool istoreProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStore operandStore = instruction->operandStore;
     Index8Operand index8Operand = operandStore.index8Operand;
     u32 index = index8Operand.index;
-
     return istoreProcess(frame, index);
 }
 
@@ -1222,15 +1222,13 @@ static bool lstoreProcess(StackFrame *frame, u32 index) {
 
     LocalVariables *localVariables = frame->localVariables;
     localVariables->setLong(localVariables, index, value);
-
     return true;
 }
 
-static bool lstoredProcessor(StackFrame *frame) {
-    OperandStore operandStore = frame->operandStore;
+static bool lstoredProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStore operandStore = instruction->operandStore;
     Index8Operand index8Operand = operandStore.index8Operand;
     u32 index = index8Operand.index;
-
     return lstoreProcess(frame, index);
 }
 
@@ -1240,15 +1238,13 @@ static bool fstoreProcess(StackFrame *frame, u32 index) {
 
     LocalVariables *localVariables = frame->localVariables;
     localVariables->setFloat(localVariables, index, value);
-
     return true;
 }
 
-static bool fstoreProcessor(StackFrame *frame) {
-    OperandStore operandStore = frame->operandStore;
+static bool fstoreProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStore operandStore = instruction->operandStore;
     Index8Operand index8Operand = operandStore.index8Operand;
     u32 index = index8Operand.index;
-    
     return fstoreProcess(frame, index);
 }
 
@@ -1258,15 +1254,13 @@ static bool dstoreProcess(StackFrame *frame, u32 index) {
 
     LocalVariables *localVariables = frame->localVariables;
     localVariables->setDouble(localVariables, index, value);
-
     return true;
 }
 
-static bool dstoreProcessor(StackFrame *frame) {
-    OperandStore operandStore = frame->operandStore;
+static bool dstoreProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStore operandStore = instruction->operandStore;
     Index8Operand index8Operand = operandStore.index8Operand;
     u32 index = index8Operand.index;
-
     return dstoreProcess(frame, index);
 }
 
@@ -1276,220 +1270,217 @@ static bool astoreProcess(StackFrame *frame, u32 index) {
 
     LocalVariables *localVariables = frame->localVariables;
     localVariables->setReference(localVariables, index, reference);
-
     return true;
 }
 
-static bool astoreProcessor(StackFrame *frame) {
-    OperandStore operandStore = frame->operandStore;
+static bool astoreProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStore operandStore = instruction->operandStore;
     Index8Operand index8Operand = operandStore.index8Operand;
     u32 index = index8Operand.index;
-
     return astoreProcess(frame, index);
 }
 
-static bool istore0Processor(StackFrame *frame) {
+static bool istore0Processor(Instruction *instruction, StackFrame *frame) {
     return istoreProcess(frame, 0);
 }
 
-static bool istore1Processor(StackFrame *frame) {
+static bool istore1Processor(Instruction *instruction, StackFrame *frame) {
     return istoreProcess(frame, 1);
 }
 
-static bool istore2Processor(StackFrame *frame) {
+static bool istore2Processor(Instruction *instruction, StackFrame *frame) {
     return istoreProcess(frame, 2);
 }
 
-static bool istore3Processor(StackFrame *frame) {
+static bool istore3Processor(Instruction *instruction, StackFrame *frame) {
     return istoreProcess(frame, 3);
 }
 
-static bool lstore0Processor(StackFrame *frame) {
+static bool lstore0Processor(Instruction *instruction, StackFrame *frame) {
     return lstoreProcess(frame, 0);
 }
 
-static bool lstore1Processor(StackFrame *frame) {
+static bool lstore1Processor(Instruction *instruction, StackFrame *frame) {
     return lstoreProcess(frame, 1);
 }
 
-static bool lstore2Processor(StackFrame *frame) {
+static bool lstore2Processor(Instruction *instruction, StackFrame *frame) {
     return lstoreProcess(frame, 2);
 }
 
-static bool lstore3Processor(StackFrame *frame) {
+static bool lstore3Processor(Instruction *instruction, StackFrame *frame) {
     return lstoreProcess(frame, 3);
 }
 
-static bool fstore0Processor(StackFrame *frame) {
+static bool fstore0Processor(Instruction *instruction, StackFrame *frame) {
     return fstoreProcess(frame, 0);
 }
 
-static bool fstore1Processor(StackFrame *frame) {
+static bool fstore1Processor(Instruction *instruction, StackFrame *frame) {
     return fstoreProcess(frame, 1);
 }
 
-static bool fstore2Processor(StackFrame *frame) {
+static bool fstore2Processor(Instruction *instruction, StackFrame *frame) {
     return fstoreProcess(frame, 2);
 }
 
-static bool fstore3Processor(StackFrame *frame) {
+static bool fstore3Processor(Instruction *instruction, StackFrame *frame) {
     return fstoreProcess(frame, 3);
 }
 
-static bool dstore0Processor(StackFrame *frame) {
+static bool dstore0Processor(Instruction *instruction, StackFrame *frame) {
     return dstoreProcess(frame, 0);
 }
 
-static bool dstore1Processor(StackFrame *frame) {
+static bool dstore1Processor(Instruction *instruction, StackFrame *frame) {
     return dstoreProcess(frame, 1);
 }
 
-static bool dstore2Processor(StackFrame *frame) {
+static bool dstore2Processor(Instruction *instruction, StackFrame *frame) {
     return dstoreProcess(frame, 2);
 }
 
-static bool dstore3Processor(StackFrame *frame) {
+static bool dstore3Processor(Instruction *instruction, StackFrame *frame) {
     return dstoreProcess(frame, 3);
 }
 
-static bool astore0Processor(StackFrame *frame) {
+static bool astore0Processor(Instruction *instruction, StackFrame *frame) {
     return astoreProcess(frame, 0);
 }
 
-static bool astore1Processor(StackFrame *frame) {
+static bool astore1Processor(Instruction *instruction, StackFrame *frame) {
     return astoreProcess(frame, 1);
 }
 
-static bool astore2Processor(StackFrame *frame) {
+static bool astore2Processor(Instruction *instruction, StackFrame *frame) {
     return astoreProcess(frame, 2);
 }
 
-static bool astore3Processor(StackFrame *frame) {
+static bool astore3Processor(Instruction *instruction, StackFrame *frame) {
     return astoreProcess(frame, 3);
 }
 
-static bool iastoreProcessor(StackFrame *frame) {
+static bool iastoreProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool lastoreProcessor(StackFrame *frame) {
+static bool lastoreProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool fastoreProcessor(StackFrame *frame) {
+static bool fastoreProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool dastoreProcessor(StackFrame *frame) {
+static bool dastoreProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool aastoreProcessor(StackFrame *frame) {
+static bool aastoreProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool bastoreProcessor(StackFrame *frame) {
+static bool bastoreProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool castoreProcessor(StackFrame *frame) {
+static bool castoreProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool sastoreProcessor(StackFrame *frame) {
+static bool sastoreProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool popProcessor(StackFrame *frame) {
+static bool popProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->popSlotData(operandStack);
-    
     return true;
 }
 
-static bool pop2Processor(StackFrame *frame) {
+static bool pop2Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     operandStack->popSlotData(operandStack);
     operandStack->popSlotData(operandStack);
-
     return true;
 }
 
-static bool dupProcessor(StackFrame *frame) {
+static bool dupProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     SlotData *slotData = operandStack->popSlotData(operandStack);
+    printf("slotData:%lu\n", slotData->reference);
     operandStack->pushSlotData(operandStack, slotData);
-
+    operandStack->pushSlotData(operandStack, slotData);
     return true;
 }
 
-static bool dupX1Processor(StackFrame *frame) {
+static bool dupX1Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     SlotData *slotData1 = operandStack->popSlotData(operandStack);
     SlotData *slotData2 = operandStack->popSlotData(operandStack);
+
     operandStack->pushSlotData(operandStack, slotData1);
     operandStack->pushSlotData(operandStack, slotData2);
     operandStack->pushSlotData(operandStack, slotData1);
-
     return true;
 }
 
-static bool dupX2Processor(StackFrame *frame) {
-    OperandStack *operandStack = frame->operandStack;
-    SlotData *slotData1 = operandStack->popSlotData(operandStack);
-    SlotData *slotData2 = operandStack->popSlotData(operandStack);
-    SlotData *slotData3 = operandStack->popSlotData(operandStack);
-    operandStack->pushSlotData(operandStack, slotData1);
-    operandStack->pushSlotData(operandStack, slotData3);
-    operandStack->pushSlotData(operandStack, slotData2);
-    operandStack->pushSlotData(operandStack, slotData1);
-
-    return true;
-}
-
-static bool dup2Processor(StackFrame *frame) {
-    OperandStack *operandStack = frame->operandStack;
-    SlotData *slotData1 = operandStack->popSlotData(operandStack);
-    SlotData *slotData2 = operandStack->popSlotData(operandStack);
-    operandStack->pushSlotData(operandStack, slotData2);
-    operandStack->pushSlotData(operandStack, slotData1);
-    operandStack->pushSlotData(operandStack, slotData2);
-    operandStack->pushSlotData(operandStack, slotData1);
-
-    return true;
-}
-
-static bool dup2X1Processor(StackFrame *frame) {
+static bool dupX2Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     SlotData *slotData1 = operandStack->popSlotData(operandStack);
     SlotData *slotData2 = operandStack->popSlotData(operandStack);
     SlotData *slotData3 = operandStack->popSlotData(operandStack);
+
+    operandStack->pushSlotData(operandStack, slotData1);
+    operandStack->pushSlotData(operandStack, slotData3);
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+    return true;
+}
+
+static bool dup2Processor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    SlotData *slotData1 = operandStack->popSlotData(operandStack);
+    SlotData *slotData2 = operandStack->popSlotData(operandStack);
+
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+    operandStack->pushSlotData(operandStack, slotData2);
+    operandStack->pushSlotData(operandStack, slotData1);
+    return true;
+}
+
+static bool dup2X1Processor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    SlotData *slotData1 = operandStack->popSlotData(operandStack);
+    SlotData *slotData2 = operandStack->popSlotData(operandStack);
+    SlotData *slotData3 = operandStack->popSlotData(operandStack);
+
     operandStack->pushSlotData(operandStack, slotData2);
     operandStack->pushSlotData(operandStack, slotData1);
     operandStack->pushSlotData(operandStack, slotData3);
     operandStack->pushSlotData(operandStack, slotData2);
     operandStack->pushSlotData(operandStack, slotData1);
-
     return true;
 }
 
-static bool dup2X2Processor(StackFrame *frame) {
+static bool dup2X2Processor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     SlotData *slotData1 = operandStack->popSlotData(operandStack);
     SlotData *slotData2 = operandStack->popSlotData(operandStack);
     SlotData *slotData3 = operandStack->popSlotData(operandStack);
     SlotData *slotData4 = operandStack->popSlotData(operandStack);
+
     operandStack->pushSlotData(operandStack, slotData2);
     operandStack->pushSlotData(operandStack, slotData1);
     operandStack->pushSlotData(operandStack, slotData4);
     operandStack->pushSlotData(operandStack, slotData3);
     operandStack->pushSlotData(operandStack, slotData2);
     operandStack->pushSlotData(operandStack, slotData1);
-
     return true;
 }
 
-static bool swapProcessor(StackFrame *frame) {
+static bool swapProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     SlotData *slotData1 = operandStack->popSlotData(operandStack);
     SlotData *slotData2 = operandStack->popSlotData(operandStack);
@@ -1499,205 +1490,187 @@ static bool swapProcessor(StackFrame *frame) {
     return true;
 }
 
-static bool iaddProcessor(StackFrame *frame) {
+static bool iaddProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value2 = operandStack->popInt(operandStack);
     int value1 = operandStack->popInt(operandStack);
 
     int result = value1 + value2;
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool laddProcessor(StackFrame *frame) {
+static bool laddProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value2 = operandStack->popLong(operandStack);
     long value1 = operandStack->popLong(operandStack);
 
     long result = value1 + value2;
     operandStack->pushLong(operandStack, result);
-
     return true;
 }
 
-static bool faddProcessor(StackFrame *frame) {
+static bool faddProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     float value2 = operandStack->popFloat(operandStack);
     float value1 = operandStack->popFloat(operandStack);
 
     float result = value1 + value2;
     operandStack->pushFloat(operandStack, result);
-
     return true;
 }
 
-static bool daddProcessor(StackFrame *frame) {
+static bool daddProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     double value2 = operandStack->popDouble(operandStack);
     double value1 = operandStack->popDouble(operandStack);
 
     double result = value1 + value2;
     operandStack->pushDouble(operandStack, result);
-
     return true;
 }
 
-static bool isubProcessor(StackFrame *frame) {
+static bool isubProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value2= operandStack->popInt(operandStack);
     int value1 = operandStack->popInt(operandStack);
 
     int result = value1 - value2;
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool lsubProcessor(StackFrame *frame) {
+static bool lsubProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value2 = operandStack->popLong(operandStack);
     long value1 = operandStack->popLong(operandStack);
 
     long result = value1 - value2;
     operandStack->pushLong(operandStack, result);
-
     return true;
 }
 
-static bool fsubProcessor(StackFrame *frame) {
+static bool fsubProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     float value2 = operandStack->popFloat(operandStack);
     float value1 = operandStack->popFloat(operandStack);
 
     float result = value1 - value2;
     operandStack->pushFloat(operandStack, result);
-
     return true;
 }
 
-static bool dsubProcessor(StackFrame *frame) {
+static bool dsubProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     double value2 = operandStack->popDouble(operandStack);
     double value1 = operandStack->popDouble(operandStack);
 
     double result = value1 - value2;
     operandStack->pushDouble(operandStack, result);
-
     return true;
 }
 
-static bool imulProcessor(StackFrame *frame) {
+static bool imulProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value2 = operandStack->popInt(operandStack);
     int value1 = operandStack->popInt(operandStack);
 
     int result = value1 * value2;
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool lmulProcessor(StackFrame *frame) {
+static bool lmulProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value2 = operandStack->popLong(operandStack);
     long value1 = operandStack->popLong(operandStack);
 
     long result = value1 * value2;
     operandStack->pushLong(operandStack, result);
-
     return true;
 }
 
-static bool fmulProcessor(StackFrame *frame) {
+static bool fmulProcessor(Instruction *instruction, StackFrame *frame) {
    OperandStack *operandStack = frame->operandStack;
     float value2 = operandStack->popFloat(operandStack);
     float value1 = operandStack->popFloat(operandStack);
 
     float result = value1 * value2;
     operandStack->pushFloat(operandStack, result);
-
     return true;
 }
 
-static bool dmulProcessor(StackFrame *frame) {
+static bool dmulProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     double value2 = operandStack->popDouble(operandStack);
     double value1 = operandStack->popDouble(operandStack);
 
     double result = value1 * value2;
     operandStack->pushDouble(operandStack, result);
-
     return true;
 }
 
-static bool idivProcessor(StackFrame *frame) {
+static bool idivProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value2 = operandStack->popInt(operandStack);
     int value1 = operandStack->popInt(operandStack);
 
     int result = value1 / value2;
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool ldivProcessor(StackFrame *frame) {
+static bool ldivProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value2 = operandStack->popLong(operandStack);
     long value1 = operandStack->popLong(operandStack);
 
     long result = value1 / value2;
     operandStack->pushLong(operandStack, result);
-
     return true;
 }
 
-static bool fdivProcessor(StackFrame *frame) {
+static bool fdivProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     float value2 = operandStack->popFloat(operandStack);
     float value1 = operandStack->popFloat(operandStack);
 
     float result = value1 / value2;
     operandStack->pushFloat(operandStack, result);
-
     return true;
 }
 
-static bool ddivProcessor(StackFrame *frame) {
+static bool ddivProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     double value2 = operandStack->popDouble(operandStack);
     double value1 = operandStack->popDouble(operandStack);
 
     double result = value1 / value2;
     operandStack->pushDouble(operandStack, result);
-
     return true;
 }
 
-static bool iremProcessor(StackFrame *frame) {
+static bool iremProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value2 = operandStack->popInt(operandStack);
     int value1 = operandStack->popInt(operandStack);
 
     int result = value1 % value2;
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool lremProcessor(StackFrame *frame) {
+static bool lremProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value2 = operandStack->popLong(operandStack);
     long value1 = operandStack->popLong(operandStack);
 
     long result = value1 % value2;
     operandStack->pushLong(operandStack, result);
-
     return true;
 }
 
-static bool fremProcessor(StackFrame *frame) {
+static bool fremProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     float value2 = operandStack->popFloat(operandStack);
     float value1 = operandStack->popFloat(operandStack);
@@ -1707,7 +1680,7 @@ static bool fremProcessor(StackFrame *frame) {
     return true;
 }
 
-static bool dremProcessor(StackFrame *frame) {
+static bool dremProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     double value2 = operandStack->popDouble(operandStack);
     double value1 = operandStack->popDouble(operandStack);
@@ -1717,7 +1690,7 @@ static bool dremProcessor(StackFrame *frame) {
     return true;
 }
 
-static bool inegProcessor(StackFrame *frame) {
+static bool inegProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value = operandStack->popInt(operandStack);
 
@@ -1725,7 +1698,7 @@ static bool inegProcessor(StackFrame *frame) {
     return true;
 }
 
-static bool lnegProcessor(StackFrame *frame) {
+static bool lnegProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value = operandStack->popLong(operandStack);
 
@@ -1733,7 +1706,7 @@ static bool lnegProcessor(StackFrame *frame) {
     return true;
 }
 
-static bool fnegProcessor(StackFrame *frame) {
+static bool fnegProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     float value = operandStack->popFloat(operandStack);
 
@@ -1741,7 +1714,7 @@ static bool fnegProcessor(StackFrame *frame) {
     return true;
 }
 
-static bool dnegProcessor(StackFrame *frame) {
+static bool dnegProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     double value = operandStack->popDouble(operandStack);
 
@@ -1749,350 +1722,570 @@ static bool dnegProcessor(StackFrame *frame) {
     return true;
 }
 
-static bool ishlProcessor(StackFrame *frame) {
+static bool ishlProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value2 = operandStack->popInt(operandStack);
     int value1 = operandStack->popInt(operandStack);
+
     u32 num = ((u32)value2) & 0X1F;
     int result = value1 << num;
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool lshlProcessor(StackFrame *frame) {
+static bool lshlProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value2 = operandStack->popInt(operandStack);
     long value1 = operandStack->popLong(operandStack);
+
     u32 num = ((u32)value2) & 0X1F;
     long result = value1 << num;
     operandStack->pushLong(operandStack, result);
-
     return true;
 }
 
-static bool ishrProcessor(StackFrame *frame) {
+static bool ishrProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value2 = operandStack->popInt(operandStack);
     int value1 = operandStack->popInt(operandStack);
+
     u32 num = ((u32)value2) & 0X1F;
     int result = value1 >> num;
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool lshrProcessor(StackFrame *frame) {
+static bool lshrProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value2 = operandStack->popInt(operandStack);
     long value1 = operandStack->popLong(operandStack);
+
     u32 num = ((u32)value2) & 0X1F;
     long result = value1 >> num;
     operandStack->pushLong(operandStack, result);
-
     return true;
 }
 
-static bool iushrProcessor(StackFrame *frame) {
+static bool iushrProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value2 = operandStack->popInt(operandStack);
     int value1 = operandStack->popInt(operandStack);
+
     u32 num = ((u32)value2) & 0X1F;
     int result = (int)(((u32)value1) >> num);
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool lushrProcessor(StackFrame *frame) {
+static bool lushrProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value2 = operandStack->popInt(operandStack);
     long value1 = operandStack->popLong(operandStack);
+
     u32 num = ((u32)value2) & 0X1F;
     long result = (long)(((u64)value1) >> num);
     operandStack->pushLong(operandStack, result);
+    return true;
 }
 
-static bool iandProcessor(StackFrame *frame) {
+static bool iandProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value1 = operandStack->popInt(operandStack);
     int value2 = operandStack->popInt(operandStack);
 
     int result = value1 & value2;
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool landProcessor(StackFrame *frame) {
+static bool landProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value1 = operandStack->popLong(operandStack);
     long value2 = operandStack->popLong(operandStack);
 
     long result = value1 & value2;
     operandStack->pushLong(operandStack, result);
-    
     return true;
 }
 
-static bool iorProcessor(StackFrame *frame) {
+static bool iorProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value1 = operandStack->popInt(operandStack);
     int value2 = operandStack->popInt(operandStack);
 
     int result = value1 | value2;
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool lorProcessor(StackFrame *frame) {
+static bool lorProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     long value1 = operandStack->popLong(operandStack);
     long value2 = operandStack->popLong(operandStack);
 
     long result = value1 | value2;
     operandStack->pushLong(operandStack, result);
-    
     return true;
 }
 
-static bool ixorProcessor(StackFrame *frame) {
+static bool ixorProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int value1 = operandStack->popInt(operandStack);
     int value2 = operandStack->popInt(operandStack);
 
     int result = value1 ^ value2;
     operandStack->pushInt(operandStack, result);
-
     return true;
 }
 
-static bool lxorProcessor(StackFrame *frame) {
-   OperandStack *operandStack = frame->operandStack;
+static bool lxorProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
     long value1 = operandStack->popLong(operandStack);
     long value2 = operandStack->popLong(operandStack);
 
     long result = value1 ^ value2;
     operandStack->pushLong(operandStack, result);
+    return true;
+}
+
+static bool iincProcessor(Instruction *instruction, StackFrame *frame) {
+    u32 index = instruction->operandStore.iincOperand.index;
+    int constValue = instruction->operandStore.iincOperand.constValue;
+
+    LocalVariables *localVariables = frame->localVariables;
+    int value = localVariables->getInt(localVariables, index);
+    value += constValue;
+    localVariables->setInt(localVariables, index, value);
+    return true;
+}
+
+static bool i2lProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int intValue = operandStack->popInt(operandStack);
+    long longValue = (long)intValue;
+    operandStack->pushLong(operandStack, longValue);
+    return true;
+}
+
+static bool i2fProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int intValue = operandStack->popInt(operandStack);
+    float floatValue = (double)intValue;
+    operandStack->pushFloat(operandStack, floatValue);
+    return true;
+}
+
+static bool i2dProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int intValue = operandStack->popInt(operandStack);
+    double doubleValue = (double)intValue;
+    operandStack->pushDouble(operandStack, doubleValue);
+    return true;
+}
+
+static bool l2iProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    long longValue = operandStack->popLong(operandStack);
+    int intValue = (int)longValue;
+    operandStack->pushInt(operandStack, intValue);
+    return true;
+}
+
+static bool l2fProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    long longValue = operandStack->popLong(operandStack);
+    float floatValue = (float)longValue;
+    operandStack->pushFloat(operandStack, floatValue);
+    return true;
+}
+
+static bool l2dProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    long longValue = operandStack->popLong(operandStack);
+    double doubleValue = (double)longValue;
+    operandStack->pushDouble(operandStack, doubleValue);
+    return true;
+}
+
+static bool f2iProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    float floatValue = operandStack->popFloat(operandStack);
+    int intValue = (int)floatValue;
+    operandStack->pushInt(operandStack, intValue);
+    return true;
+}
+
+static bool f2lProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    float floatValue = operandStack->popFloat(operandStack);
+    long longValue = (long)floatValue;
+    operandStack->pushLong(operandStack, longValue);
+    return true;
+}
+
+static bool f2dProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    float floatValue = operandStack->popFloat(operandStack);
+    double doubleValue = (double)floatValue;
+    operandStack->pushDouble(operandStack, doubleValue);
+    return true;
+}
+
+static bool d2iProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    double doubleValue = operandStack->popDouble(operandStack);
+    int intValue = (int)doubleValue;
+    operandStack->pushInt(operandStack, intValue);
+    return true;
+}
+
+static bool d2lProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    double doubleValue = operandStack->popDouble(operandStack);
+    long longValue = (long)doubleValue;
+    operandStack->pushLong(operandStack, longValue);
+    return true;
+}
+
+static bool d2fProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    double doubleValue = operandStack->popDouble(operandStack);
+    float floatValue = (float)doubleValue;
+    operandStack->pushFloat(operandStack, floatValue);
+    return true;
+}
+
+static bool i2bProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int intValue = operandStack->popInt(operandStack);
+    byte byteValue = (byte)intValue;
+    operandStack->pushInt(operandStack, byteValue);
+    return true;
+}
+
+static bool i2cProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int intValue = operandStack->popInt(operandStack);
+    u16 shortValue = (u16)intValue;
+    operandStack->pushInt(operandStack, shortValue);
+    return true;
+}
+
+static bool i2sProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int intValue = operandStack->popInt(operandStack);
+    short shortValue = (short)intValue;
+    operandStack->pushInt(operandStack, shortValue);
+    return true;
+}
+
+static bool lcmpProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    long value2 = operandStack->popLong(operandStack);
+    long value1 = operandStack->popLong(operandStack);
+
+    if (value1 > value2) {
+        operandStack->pushInt(operandStack, 1);
+    } else if (value1 == value2) {
+        operandStack->pushInt(operandStack, 0);
+    } else {
+        operandStack->pushInt(operandStack, -1);
+    }
+    return true;
+}
+
+static bool fcmplProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    float value2 = operandStack->popFloat(operandStack);
+    float value1 = operandStack->popFloat(operandStack);
+
+    if (value1 > value2) {
+        operandStack->pushInt(operandStack, 1);
+    } else if (isEqualFloatNum(value1, value2)) {
+        operandStack->pushInt(operandStack, 0);
+    } else if (value1 < value2) {
+        operandStack->pushInt(operandStack, -1);
+    } else {
+        operandStack->pushInt(operandStack, -1);
+    }
+
+    return true;
+}
+
+static bool fcmpgProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    float value2 = operandStack->popFloat(operandStack);
+    float value1 = operandStack->popFloat(operandStack);
+
+    if (value1 > value2) {
+        operandStack->pushInt(operandStack, 1);
+    } else if (isEqualFloatNum(value1, value2)) {
+        operandStack->pushInt(operandStack, 0);
+    } else if (value1 < value2) {
+        operandStack->pushInt(operandStack, -1);
+    } else {
+        operandStack->pushInt(operandStack, 1);
+    }
+
+    return true;
+}
+
+static bool dcmplProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    double value2 = operandStack->popDouble(operandStack);
+    double value1 = operandStack->popDouble(operandStack);
+
+    if (value1 > value2) {
+        operandStack->pushInt(operandStack, 1);
+    } else if (isEqualDoubleNum(value1, value2)) {
+        operandStack->pushInt(operandStack, 0);
+    } else if (value1 < value2) {
+        operandStack->pushInt(operandStack, -1);
+    } else {
+        operandStack->pushInt(operandStack, -1);
+    }
+
+    return true;
+}
+
+static bool dcmpgProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    double value2 = operandStack->popDouble(operandStack);
+    double value1 = operandStack->popDouble(operandStack);
+
+    if (value1 > value2) {
+        operandStack->pushInt(operandStack, 1);
+    } else if (isEqualDoubleNum(value1, value2)) {
+        operandStack->pushInt(operandStack, 0);
+    } else if (value1 < value2) {
+        operandStack->pushInt(operandStack, -1);
+    } else {
+        operandStack->pushInt(operandStack, 1);
+    }
     
     return true;
 }
 
-static bool iincProcessor(StackFrame *frame) {
+static void branchProcess(StackFrame *frame, int offset) {
+    ByteReader *byteReader = frame->byteReader;
+    u32 nextPC = byteReader->pc + offset;
+    byteReader->setPC(byteReader, nextPC);
+}
+
+static bool ifeqProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int value = operandStack->popInt(operandStack);
+    int offset = instruction->operandStore.branchOperand.offset;
+
+    if (value==0) {
+        branchProcess(frame, offset);
+    }
     return true;
 }
 
-static bool i2lProcessor(StackFrame *frame) {
+static bool ifneProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int value = operandStack->popInt(operandStack);
+    int offset = instruction->operandStore.branchOperand.offset;
+
+    if (value!=0) {
+        branchProcess(frame, offset);
+    }
     return true;
 }
 
-static bool i2fProcessor(StackFrame *frame) {
+static bool ifltProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int value = operandStack->popInt(operandStack);
+    int offset = instruction->operandStore.branchOperand.offset;
+
+    if (value<0) {
+        branchProcess(frame, offset);
+    }
     return true;
 }
 
-static bool i2dProcessor(StackFrame *frame) {
+static bool ifgeProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int value = operandStack->popInt(operandStack);
+    int offset = instruction->operandStore.branchOperand.offset;
+
+    if (value>=0) {
+        branchProcess(frame, offset);
+    }
     return true;
 }
 
-static bool l2iProcessor(StackFrame *frame) {
+static bool ifgtProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int value = operandStack->popInt(operandStack);
+    int offset = instruction->operandStore.branchOperand.offset;
+
+    if (value>0) {
+        branchProcess(frame, offset);
+    }
     return true;
 }
 
-static bool l2fProcessor(StackFrame *frame) {
+static bool ifleProcessor(Instruction *instruction, StackFrame *frame) {
+    OperandStack *operandStack = frame->operandStack;
+    int value = operandStack->popInt(operandStack);
+    int offset = instruction->operandStore.branchOperand.offset;
+
+    if (value<=0) {
+        branchProcess(frame, offset);
+    }
     return true;
 }
 
-static bool l2dProcessor(StackFrame *frame) {
+static bool ifIcmpeqProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool f2iProcessor(StackFrame *frame) {
+static bool ifIcmpneProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool f2lProcessor(StackFrame *frame) {
+static bool ifIcmpltProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool f2dProcessor(StackFrame *frame) {
+static bool ifIcmpgeProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool d2iProcessor(StackFrame *frame) {
+static bool ifIcmpgtProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool d2lProcessor(StackFrame *frame) {
+static bool ifIcmpleProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool d2fProcessor(StackFrame *frame) {
+static bool ifAcmpeqProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool i2bProcessor(StackFrame *frame) {
+static bool ifAcmpneProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool i2cProcessor(StackFrame *frame) {
+static bool gotoProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool i2sProcessor(StackFrame *frame) {
+static bool jsrProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool lcmpProcessor(StackFrame *frame) {
+static bool retProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool fcmplProcessor(StackFrame *frame) {
+static bool tableswitchProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool fcmpgProcessor(StackFrame *frame) {
+static bool lookupswitchProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool dcmplProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool dcmpgProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifeqProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifneProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifltProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifgeProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifgtProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifleProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifIcmpeqProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifIcmpneProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifIcmpltProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifIcmpgeProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifIcmpgtProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifIcmpleProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifAcmpeqProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifAcmpneProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool gotoProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool jsrProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool retProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool tableswitchProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool lookupswitchProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ireturnProcessor(StackFrame *frame) {
+static bool ireturnProcessor(Instruction *instruction, StackFrame *frame) {
     Thread *thread = frame->thread;
     StackFrame *currentFrame = thread->popStackFrame(thread);
     StackFrame *invokeFrame = thread->peekStackFrame(thread);
 
     OperandStack *currentOperandStack = currentFrame->operandStack;
     int value = currentOperandStack->popInt(currentOperandStack);
-    
+
     OperandStack *invokeOperandStack = invokeFrame->operandStack;
     invokeOperandStack->pushInt(invokeOperandStack, value);
 
     return true;
 }
 
-static bool lreturnProcessor(StackFrame *frame) {
+static bool lreturnProcessor(Instruction *instruction, StackFrame *frame) {
+    Thread *thread = frame->thread;
+    StackFrame *currentFrame = thread->popStackFrame(thread);
+    StackFrame *invokeFrame = thread->peekStackFrame(thread);
+
+    OperandStack *currentOperandStack = currentFrame->operandStack;
+    long value = currentOperandStack->popLong(currentOperandStack);
+
+    OperandStack *invokeOperandStack = invokeFrame->operandStack;
+    invokeOperandStack->pushLong(invokeOperandStack, value);
+
     return true;
 }
 
-static bool freturnProcessor(StackFrame *frame) {
+static bool freturnProcessor(Instruction *instruction, StackFrame *frame) {
+    Thread *thread = frame->thread;
+    StackFrame *currentFrame = thread->popStackFrame(thread);
+    StackFrame *invokeFrame = thread->peekStackFrame(thread);
+
+    OperandStack *currentOperandStack = currentFrame->operandStack;
+    float value = currentOperandStack->popFloat(currentOperandStack);
+
+    OperandStack *invokeOperandStack = invokeFrame->operandStack;
+    invokeOperandStack->pushFloat(invokeOperandStack, value);
+
     return true;
 }
 
-static bool dreturnProcessor(StackFrame *frame) {
+static bool dreturnProcessor(Instruction *instruction, StackFrame *frame) {
+    Thread *thread = frame->thread;
+    StackFrame *currentFrame = thread->popStackFrame(thread);
+    StackFrame *invokeFrame = thread->peekStackFrame(thread);
+
+    OperandStack *currentOperandStack = currentFrame->operandStack;
+    double value = currentOperandStack->popDouble(currentOperandStack);
+
+    OperandStack *invokeOperandStack = invokeFrame->operandStack;
+    invokeOperandStack->pushDouble(invokeOperandStack, value);
+
     return true;
 }
 
-static bool areturnProcessor(StackFrame *frame) {
+static bool areturnProcessor(Instruction *instruction, StackFrame *frame) {
+    Thread *thread = frame->thread;
+    StackFrame *currentFrame = thread->popStackFrame(thread);
+    StackFrame *invokeFrame = thread->peekStackFrame(thread);
+
+    OperandStack *currentOperandStack = currentFrame->operandStack;
+    void* reference = currentOperandStack->popReference(currentOperandStack);
+
+    OperandStack *invokeOperandStack = invokeFrame->operandStack;
+    invokeOperandStack->pushReference(invokeOperandStack, reference);
+
     return true;
 }
 
-static bool returnProcessor(StackFrame *frame) {
+static bool returnProcessor(Instruction *instruction, StackFrame *frame) {
+    Thread *thread = frame->thread;
+    StackFrame *currentFrame = thread->popStackFrame(thread);
     return true;
 }
 
-static bool getStaticProcessor(StackFrame *frame) {
+static bool getStaticProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool putStaticProcessor(StackFrame *frame) {
+static bool putStaticProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool getFieldProcessor(StackFrame *frame) {
+static bool getFieldProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool putFieldProcessor(StackFrame *frame) {
+static bool putFieldProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
 static bool invokeMethodProcess(Thread *thread, StackFrame *stackFrame, Method *method) {
-	StackFrame *newStackFrame = createStackFrame(thread, method);
-	ByteReader *byteReader = createByteReader(method->codeData, method->codeLength, 0);
-
+    ByteReader *byteReader = createByteReader(method->codeData, method->codeLength, 0);
+	StackFrame *newStackFrame = createStackFrame(thread, method, byteReader);
+	
     RuntimeStack *runtimeStack = thread->runtimeStack;
     runtimeStack->pushStack(runtimeStack, newStackFrame);
 
@@ -2111,21 +2304,23 @@ static bool invokeMethodProcess(Thread *thread, StackFrame *stackFrame, Method *
 		u8 operCode = byteReader->readByte(byteReader);
 		Instruction *instruction = getInstructionByCode(operCode);
 		printf("    PC:%02d %s\n", pc, instruction->name);
-		instruction->fetcher(byteReader, newStackFrame);
-		instruction->processor(newStackFrame);
+		instruction->fetcher(instruction, byteReader);
+		instruction->processor(instruction, newStackFrame);
 	}
     return true;
 }
 
-static bool invokeVirtualProcessor(StackFrame *frame) {
+static bool invokeVirtualProcessor(Instruction *instruction, StackFrame *frame) {
+    
+
     return true;
 }
 
-static bool invokeSpecialProcessor(StackFrame *frame) {
+static bool invokeSpecialProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool invokeStaticProcessor(StackFrame *frame) {
+static bool invokeStaticProcessor(Instruction *instruction, StackFrame *frame) {
 
     ConstPool *constPool;
     ConstUtf8Info *constUtf8Info;
@@ -2133,8 +2328,7 @@ static bool invokeStaticProcessor(StackFrame *frame) {
     ConstMethodRefInfo *constMethodRefInfo;
     ConstNameAndTypeInfo *constNameAndTypeInfo;
 
-    OperandStore operandStore = frame->operandStore;
-    u16 index = operandStore.index16Operand.index;
+    u16 index = instruction->operandStore.index16Operand.index;
     Class *class = frame->method->class;
     constPool = class->getConstant(class, index);
     constMethodRefInfo = (ConstMethodRefInfo *)constPool->value;
@@ -2166,21 +2360,19 @@ static bool invokeStaticProcessor(StackFrame *frame) {
     Thread *thread = frame->thread;
 
     invokeMethodProcess(thread, frame, invokeMethod);
-
     return true;
 }
 
-static bool invokeInterfaceProcessor(StackFrame *frame) {
+static bool invokeInterfaceProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool invokeDynamicProcessor(StackFrame *frame) {
+static bool invokeDynamicProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
 
-static bool newProcessor(StackFrame *frame) {
-    Index16Operand index16Operand = frame->operandStore.index16Operand;
-    u16 index = index16Operand.index;
+static bool newProcessor(Instruction *instruction, StackFrame *frame) {
+    u16 index =  instruction->operandStore.index16Operand.index;
     Class *class = frame->method->class;
     ConstPool *constPool = class->getConstant(class, index);
     ConstClassInfo *constClassInfo = (ConstClassInfo *)constPool->value;
@@ -2189,142 +2381,144 @@ static bool newProcessor(StackFrame *frame) {
     char *instClassName = constUtf8Info->bytes;
     Class *instClass = vmachine->findClassByName(vmachine, instClassName);
     Instance *instance = createInstance(instClass);
+
+    printf("instance:%lu\n", instance);
+
     OperandStack *operandStack = frame->operandStack;
     operandStack->pushReference(operandStack, instance);
+    return true;
+}
+
+static bool newArrayProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool aNewArrayProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool arrayLengthProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool athrowProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool checkCastProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool instanceofProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool monitorEnterProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool monitorExitProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool wideProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool multiaNewArrayProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool ifNullProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool ifNonNullProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool gotoWProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+static bool jsrWProcessor(Instruction *instruction, StackFrame *frame) {
+    return true;
+}
+
+
+static bool NoOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    return true;
+}
+
+static bool WideOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    return true;
+}
+
+static bool IIncOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    u32 operand1 = byteReader->readByte(byteReader);
+    int operand2 = byteReader->readByte(byteReader);
+    instruction->operandStore.iincOperand.index = operand1;
+    instruction->operandStore.iincOperand.constValue = operand2;
+    return true;
+}
+
+static bool BranchOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    short operand = byteReader->readShort(byteReader);
+    instruction->operandStore.branchOperand.offset = operand;
+    return true;
+}
+
+static bool Index8OperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    byte operand = byteReader->readByte(byteReader);
+    instruction->operandStore.index8Operand.index = operand;
+    return true;
+}
+
+static bool Index16OperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    short operand = byteReader->readShort(byteReader);
+    instruction->operandStore.index16Operand.index = operand;
+    return true;
+}
+
+static bool BipushOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    byte operand = byteReader->readByte(byteReader);
+    instruction->operandStore.bipushOperand.value = operand;
+    return true;
+}
+
+static bool SipushOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    short operand = byteReader->readShort(byteReader);
+    instruction->operandStore.sipushOperand.value = operand;
+    return true;
+}
+
+static bool GotoWOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    int operand = byteReader->readInteger(byteReader);
+    instruction->operandStore.gotoWOperand.offset = operand;
+    return true;
+}
+
+static bool NewArrayOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    return true;
+}
+
+static bool LookupSwitchOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    return true;
+}
+
+static bool TableSwitchOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    return true;
+}
+
+static bool InvokeInterfaceOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
+    u16 operand = byteReader->readShort(byteReader);
+    instruction->operandStore.invokeInterfaceOperand.index = operand;
+    byteReader->readByte(byteReader);
+    byteReader->readByte(byteReader);
 
     return true;
 }
 
-static bool newArrayProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool aNewArrayProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool arrayLengthProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool athrowProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool checkCastProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool instanceofProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool monitorEnterProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool monitorExitProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool wideProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool multiaNewArrayProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifNullProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool ifNonNullProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool gotoWProcessor(StackFrame *frame) {
-    return true;
-}
-
-static bool jsrWProcessor(StackFrame *frame) {
-    return true;
-}
-
-
-static bool NoOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    return true;
-}
-
-static bool WideOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    return true;
-}
-
-static bool IIncOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    u32 operand1 = reader->readByte(reader);
-    int operand2 = reader->readByte(reader);
-    frame->operandStore.iincOperand.index = operand1;
-    frame->operandStore.iincOperand.constValue = operand2;
-    return true;
-}
-
-static bool BranchOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    short operand = reader->readShort(reader);
-    frame->operandStore.branchOperand.offset = operand;
-    return true;
-}
-
-static bool Index8OperandFetcher(ByteReader *reader, StackFrame *frame) {
-    byte operand = reader->readByte(reader);
-    frame->operandStore.index8Operand.index = operand;
-    return true;
-}
-
-static bool Index16OperandFetcher(ByteReader *reader, StackFrame *frame) {
-    short operand = reader->readShort(reader);
-    frame->operandStore.index16Operand.index = operand;
-    return true;
-}
-
-static bool BipushOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    byte operand = reader->readByte(reader);
-    frame->operandStore.bipushOperand.value = operand;
-    return true;
-}
-
-static bool SipushOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    short operand = reader->readShort(reader);
-    frame->operandStore.sipushOperand.value = operand;
-    return true;
-}
-
-static bool GotoWOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    int operand = reader->readInteger(reader);
-    frame->operandStore.gotoWOperand.offset = operand;
-    return true;
-}
-
-static bool NewArrayOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    return true;
-}
-
-static bool LookupSwitchOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    return true;
-}
-
-static bool TableSwitchOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    return true;
-}
-
-static bool InvokeInterfaceOperandFetcher(ByteReader *reader, StackFrame *frame) {
-    u16 operand = reader->readShort(reader);
-    frame->operandStore.invokeInterfaceOperand.index = operand;
-    reader->readByte(reader);
-    reader->readByte(reader);
-
-    return true;
-}
-
-static bool MultiANewArrayOperandFetcher(ByteReader *reader, StackFrame *frame) {
+static bool MultiANewArrayOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
     return true;
 }

@@ -274,23 +274,7 @@ struct Class {
 	
 	Class *superClass;
 
-	Class *interfaces;
-
-	bool (*isPublic)(Class *this);
-
-	bool (*isFinal)(Class *this);
-
-	bool (*isSuper)(Class *this);
-
-	bool (*isInterface)(Class *this);
-
-	bool (*isAbstract)(Class *this);
-
-	bool (*isSynthetic)(Class *this);
-
-	bool (*isAnnotation)(Class *this);
-
-	bool (*isEnum)(Class *this);
+	Class **interfaces;
 
 	ConstPool* (*getConstant)(Class *this, u32 index);
 
@@ -299,8 +283,48 @@ struct Class {
 	Method* (*findMethod)(Class *this, char *methodName, char *descriptor);
 
 	Method* (*findMainMethod)(Class *this);
+
+	bool (*isSubClassOf)(Class *this, Class *super);
+
+	bool (*isSuperClassOf)(Class *this, Class *subclass);
 };
 
 Class* loadClassFromFile(char *filename);
 
 Class* defineClass(byte* classData);
+
+bool isPublic(u16 accessFlags);
+
+bool isPrivate(u16 accessFlags);
+
+bool isProtected(u16 accessFlags);
+
+bool isStatic(u16 accessFlags);
+
+bool isFinal(u16 accessFlags);
+
+bool isSuper(u16 accessFlags);
+
+bool isSynchronized(u16 accessFlags);
+
+bool isVolatile(u16 accessFlags);
+
+bool isBridge(u16 accessFlags);
+
+bool isTranslent(u16 accessFlags);
+
+bool isVarargs(u16 accessFlags);
+
+bool isNative(u16 accessFlags);
+
+bool isInterface(u16 accessFlags);
+
+bool isAbstract(u16 accessFlags);
+
+bool isStrict(u16 accessFlags);
+
+bool isSynthetic(u16 accessFlags);
+
+bool isAnnotation(u16 accessFlags);
+
+bool isEnum(u16 accessFlags);

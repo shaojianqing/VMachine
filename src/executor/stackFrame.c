@@ -21,12 +21,13 @@ static StackFrame* peekStack(RuntimeStack *this);
 
 static bool isStackEmpty(RuntimeStack *this);
 
-StackFrame *createStackFrame(Thread *thread, Method *method) {
+StackFrame *createStackFrame(Thread *thread, Method *method, ByteReader *byteReader) {
     if (method!=NULL) {
         StackFrame *stackFrame = (StackFrame *)calloc(1, sizeof(StackFrame));
 
         stackFrame->thread = thread;
         stackFrame->method = method;
+        stackFrame->byteReader = byteReader;
         stackFrame->localVariables = createLocalVariables(method->maxLocalSize);
         stackFrame->operandStack = createOperandStack(method->maxStackSize);
 

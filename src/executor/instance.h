@@ -1,11 +1,18 @@
+typedef struct FieldData {
+
+    Field *field;
+
+    SlotData slotData;
+
+} FieldData;
 
 typedef struct Instance {
 
     Class *class;
 
-    u32 slotDataCount;
+    u32 fieldDataCount;
 
-    SlotData *slotDataList;
+    FieldData *fieldDataList;
 
 } Instance;
 

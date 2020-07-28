@@ -16,22 +16,25 @@
 #include "../datatype/dataType.h"
 #include "../minizip/unzip.h"
 #include "../hashmap/hashMap.h"
+#include "../arraylist/arrayList.h"
 #include "../executor/thread.h"
 #include "../utils/utils.h"
 
 #include "vmachine.h"
 
-Class* findClassByName(VMachine *this, char* name);
+static Class* findClassByName(VMachine *this, char* name);
 
-void startVMachine(VMachine *this);
+static void startVMachine(VMachine *this);
 
-void initMainEntryClass(VMachine *this, char *classname);
+static void initMainEntryClass(VMachine *this, char *classname);
 
-void initClassFromJarFile(HashMap *classPool, char *filename);
+static void initClassFromJarFile(HashMap *classPool, ArrayList *classList, char *filename);
 
-void initClassFromRuntimeJarFile(VMachine *this);
+static void initClassFromRuntimeJarFile(VMachine *this);
 
-void initClassFromUserDefineJarFile(VMachine *this, char *filename);
+static void initClassFromUserDefineJarFile(VMachine *this, char *filename);
+
+static void linkClassPoolConfig(VMachine *this);
 
 VMachine* buildVMachine() {
 	VMachine *vmachine = (VMachine*)calloc(1, sizeof(VMachine));
@@ -41,14 +44,16 @@ VMachine* buildVMachine() {
 	vmachine->initMainEntryClass = initMainEntryClass;
 	vmachine->initClassFromRuntimeJarFile = initClassFromRuntimeJarFile;
 	vmachine->initClassFromUserDefineJarFile = initClassFromUserDefineJarFile;
+	vmachine->linkClassPoolConfig = linkClassPoolConfig;
 
+	vmachine->classListPool = createArrayList(StringEqualFun, 20000);
 	vmachine->runtimeClassPool = createHashMap(StringHashCode, StringEqualFun, 20000);
 	vmachine->userDefineClassPool = createHashMap(StringHashCode, StringEqualFun, 100);
 
 	return vmachine;
 }
 
-void startVMachine(VMachine *this) {
+static void startVMachine(VMachine *this) {
 	Class *mainEntryClass = this->mainEntryClass;
 	Method *mainMethod = mainEntryClass->findMainMethod(mainEntryClass);
 
@@ -56,7 +61,7 @@ void startVMachine(VMachine *this) {
 	thread->startThread(thread, mainMethod);
 }
 
-Class* findClassByName(VMachine *this, char *name) {
+static Class* findClassByName(VMachine *this, char *name) {
 	HashMap *classPool = this->runtimeClassPool;
 	Class *class = classPool->get(classPool, name);
 	if (class==NULL) {
@@ -66,22 +71,22 @@ Class* findClassByName(VMachine *this, char *name) {
 	return class;
 }
 
-void initMainEntryClass(VMachine *this, char *classname) {
+static void initMainEntryClass(VMachine *this, char *classname) {
 	Class* mainEntryClass = findClassByName(this, classname);
 	this->mainEntryClass = mainEntryClass;
 }
 
-void initClassFromRuntimeJarFile(VMachine *this){
+static void initClassFromRuntimeJarFile(VMachine *this){
 	char *javaPath = getenv(JAVA_HOME);
     javaPath = strcat(javaPath, "/jre/lib/rt.jar");
-	initClassFromJarFile(this->runtimeClassPool, javaPath);
+	initClassFromJarFile(this->runtimeClassPool, this->classListPool, javaPath);
 }
 
-void initClassFromUserDefineJarFile(VMachine *this, char *filename) {
-	initClassFromJarFile(this->userDefineClassPool, filename);
+static void initClassFromUserDefineJarFile(VMachine *this, char *filename) {
+	initClassFromJarFile(this->userDefineClassPool, this->classListPool, filename);
 }
 
-void initClassFromJarFile(HashMap *classPool, char *filename) {
+static void initClassFromJarFile(HashMap *classPool, ArrayList *classList, char *filename) {
 	if (filename==NULL) {
 		return;
 	}
@@ -123,6 +128,7 @@ void initClassFromJarFile(HashMap *classPool, char *filename) {
 			if (isEndWith(filename, ".class")) {
 				Class *class = defineClass(mem);
 				classPool->put(classPool, class->className, class);
+				classList->add(classList, class);
 			}
 
             free (mem);
@@ -138,4 +144,25 @@ void initClassFromJarFile(HashMap *classPool, char *filename) {
 		unzClose (uzf);
 		return;
 	} while (0);
+}
+
+static void linkClassPoolConfig(VMachine *this) {
+
+	ArrayList *classListPool = this->classListPool;
+	HashMap *runtimeClassPool = this->runtimeClassPool;
+    HashMap *userDefineClassPool = this->userDefineClassPool;
+
+	u32 i = 0,k = 0;
+	for (i = 0;i<classListPool->size;++i) {
+		Class *class = (Class *)classListPool->get(classListPool, i);
+		Class *superClass = this->findClassByName(this, class->superClassName);
+		class->superClass = superClass;
+
+		class->interfaces = (Class **)calloc(class->interfaceCount, sizeof(Class *));
+		for (k = 0;k<class->interfaceCount;++k) {
+			char *interfaceName = class->interfaceNames[k];
+			Class *interface = this->findClassByName(this, interfaceName);
+			class->interfaces[k] = interface;
+		}
+	}
 }

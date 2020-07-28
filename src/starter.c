@@ -16,6 +16,7 @@
 #include "executor/descriptor.h"
 #include "datatype/dataType.h"
 #include "hashmap/hashMap.h"
+#include "arraylist/arrayList.h"
 #include "runtime/vmachine.h"
 #include "utils/utils.h"
 
@@ -38,8 +39,23 @@ int main(int argc, char **argv) {
 	vmachine = buildVMachine();
 	vmachine->initClassFromRuntimeJarFile(vmachine);
     vmachine->initClassFromUserDefineJarFile(vmachine, filename);
+	vmachine->linkClassPoolConfig(vmachine);
 	vmachine->initMainEntryClass(vmachine, "com/sys/main/Main");
 	vmachine->startVMachine(vmachine);
+
+	Class *class = vmachine->findClassByName(vmachine, "java/util/HashMap");
+
+	Class *step = class;
+	while (step!=NULL) {
+		printf("Class:%s->", step->className);
+		step = step->superClass;
+	}
+	printf("\n");
+
+	int i = 0;
+	for (i=0;i<class->interfaceCount;++i) {
+		printf("Interface:%s\n", class->interfaceNames[i]);
+	}
 
 	/*Class *class = vmachine->mainEntryClass;
 	Method *mainMethod = class->findMainMethod(class);

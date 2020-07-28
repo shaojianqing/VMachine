@@ -31,6 +31,8 @@ struct OperandStack {
     void (*pushSlotData)(OperandStack *this, SlotData *slotData);
 
     SlotData* (*popSlotData)(OperandStack *this);
+
+    void* (*getReferenceFromTop)(OperandStack *this, u32 n);
 };
 
 OperandStack *createOperandStack(u32 maxStack);

@@ -24,3 +24,5 @@
 #define CONSTANT_InvokeDynamic 		18
 #define CONSTANT_Module 			19
 #define CONSTANT_Package 			20
+
+#define ZERO_NUM                    0.000000001

@@ -32,6 +32,8 @@ static void pushSlotData(OperandStack *this, SlotData *slotData);
 
 static SlotData* popSlotData(OperandStack *this);
 
+static void* getReferenceFromTop(OperandStack *this, u32 n);
+
 OperandStack *createOperandStack(u32 maxStack) {
     if (maxStack>0) {
         OperandStack *operandStack = (OperandStack *)calloc(1, sizeof(OperandStack));
@@ -115,4 +117,9 @@ static void pushSlotData(OperandStack *this, SlotData *slotData) {
 static SlotData* popSlotData(OperandStack *this) {
     this->count--;
     return &(this->slotList[this->count]);
+}
+
+static void* getReferenceFromTop(OperandStack *this, u32 n) {
+    u32 count = this->count;
+    return this->slotList[count-1-n].reference;
 }

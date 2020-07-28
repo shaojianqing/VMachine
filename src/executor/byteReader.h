@@ -14,6 +14,8 @@ struct ByteReader {
 	short (*readShort)(ByteReader *this);
 
 	int (*readInteger)(ByteReader *this);
+
+	void (*setPC)(ByteReader *this, u32 pc);
 };
 
 ByteReader *createByteReader(byte* code, u32 length, u32 pc);

@@ -15,24 +15,6 @@
 
 byte classFileBuffer[MAX_FILE_SIZE];
 
-static bool isPublic(Class *this);
-
-static bool isFinal(Class *this);
-
-static bool isSuper(Class *this);
-
-static bool isInterface(Class *this);
-
-static bool isAbstract(Class *this);
-
-static bool isSynthetic(Class *this);
-
-static bool isAnnotation(Class *this);
-
-static bool isEnum(Class *this);
-
-static bool isInterface(Class *this);
-
 static void initFuncations(Class *class);
 
 static ConstPool* getConstant(Class *this, u32 index);
@@ -79,51 +61,10 @@ Class* defineClass(byte* classData) {
 }
 
 static void initFuncations(Class *class) {
-	class->isPublic = isPublic;
-	class->isFinal = isFinal;
-	class->isSuper = isSuper;
-	class->isInterface = isInterface;
-	class->isAbstract = isAbstract;
-	class->isSynthetic = isSynthetic;
-	class->isAnnotation = isAnnotation;
-	class->isEnum = isEnum;
-
 	class->getConstant = getConstant;
 	class->findField = findField;
 	class->findMethod = findMethod;
 	class->findMainMethod = findMainMethod;
-}
-
-static bool isPublic(Class *this) {
-	return (this->accessFlags & ACC_PUBLIC)>0;
-}
-
-static bool isFinal(Class *this) {
-	return (this->accessFlags & ACC_FINAL)>0;
-}
-
-static bool isSuper(Class *this) {
-	return (this->accessFlags & ACC_SUPER)>0;
-}
-
-static bool isInterface(Class *this) {
-	return (this->accessFlags & ACC_INTERFACE)>0;
-}
-
-static bool isAbstract(Class *this) {
-	return (this->accessFlags & ACC_ABSTRACT)>0;
-}
-
-static bool isSynthetic(Class *this) {
-	return (this->accessFlags & ACC_SYNTHETIC)>0;
-}
-
-static bool isAnnotation(Class *this) {
-	return (this->accessFlags & ACC_ANNOTATION)>0;
-}
-
-static bool isEnum(Class *this) {
-	return (this->accessFlags & ACC_ENUM)>0;
 }
 
 static ConstPool* getConstant(Class *this, u32 index) {
@@ -558,4 +499,76 @@ static void resolveClassData(Class *class, byte *data) {
 			}		
 		}
 	}
+}
+
+bool isPublic(u16 accessFlags) {
+	return (accessFlags & ACC_PUBLIC)>0;
+}
+
+bool isPrivate(u16 accessFlags) {
+	return (accessFlags & ACC_PRIVATE)>0;
+}
+
+bool isProtected(u16 accessFlags) {
+	return (accessFlags & ACC_PROTECTED)>0;
+}
+
+bool isStatic(u16 accessFlags) {
+	return (accessFlags & ACC_STATIC)>0;
+}
+
+bool isFinal(u16 accessFlags) {
+	return (accessFlags & ACC_FINAL)>0;
+}
+
+bool isSuper(u16 accessFlags) {
+	return (accessFlags & ACC_SUPER)>0;
+}
+
+bool isSynchronized(u16 accessFlags) {
+	return (accessFlags & ACC_SYNCHRONIZED)>0;
+}
+
+bool isVolatile(u16 accessFlags) {
+	return (accessFlags & ACC_VOLATILE)>0;
+}
+
+bool isBridge(u16 accessFlags) {
+	return (accessFlags & ACC_BRIDGE)>0;
+}
+
+bool isTranslent(u16 accessFlags) {
+	return (accessFlags & ACC_TRANSLENT)>0;
+}
+
+bool isVarargs(u16 accessFlags) {
+	return (accessFlags & ACC_VARARGS)>0;
+}
+
+bool isNative(u16 accessFlags) {
+	return (accessFlags & ACC_NATIVE)>0;
+}
+
+bool isInterface(u16 accessFlags) {
+	return (accessFlags & ACC_INTERFACE)>0;
+}
+
+bool isAbstract(u16 accessFlags) {
+	return (accessFlags & ACC_ABSTRACT)>0;
+}
+
+bool isStrict(u16 accessFlags) {
+	return (accessFlags & ACC_STRICT)>0;
+}
+
+bool isSynthetic(u16 accessFlags) {
+	return (accessFlags & ACC_SYNTHETIC)>0;
+}
+
+bool isAnnotation(u16 accessFlags) {
+	return (accessFlags & ACC_ANNOTATION)>0;
+}
+
+bool isEnum(u16 accessFlags) {
+	return (accessFlags & ACC_ENUM)>0;
 }

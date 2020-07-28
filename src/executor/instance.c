@@ -13,8 +13,21 @@
 Instance *createInstance(Class *class) {
 	Instance *instance = (Instance *)calloc(1, sizeof(Instance));
 	instance->class = class;
-	instance->slotDataCount = class->fieldCount;
-	instance->slotDataList = (SlotData *)calloc(class->fieldCount, sizeof(SlotData));
+    int i = 0, k = 0, fieldCount = 0;
+    for (i=0;i<class->fieldCount;++i) {
+        if (!isStatic(class->fieldList[i].accessFlags)) {
+            fieldCount++;
+        }
+    }
+
+	instance->fieldDataCount = fieldCount;
+	instance->fieldDataList = (FieldData *)calloc(fieldCount, sizeof(FieldData));
+    for (i=0,k=0;i<class->fieldCount;++i) {
+        if (!isStatic(class->fieldList[i].accessFlags)) {
+            instance->fieldDataList[k].field = &class->fieldList[i];
+            k++;
+        }
+    }
 
 	return instance;
 }

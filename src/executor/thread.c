@@ -7,6 +7,7 @@
 #include "../resolver/class.h"
 #include "../datatype/dataType.h"
 #include "../hashmap/hashMap.h"
+#include "../arraylist/arrayList.h"
 #include "../runtime/vmachine.h"
 
 #include "dataStructure.h"
@@ -41,9 +42,9 @@ Thread* createThread(VMachine *vmachine) {
 }
 
 static void startThread(Thread* thread, Method *method) {
-    StackFrame *stackFrame = createStackFrame(thread, method);
-	ByteReader *byteReader = createByteReader(method->codeData, method->codeLength, 0);
-
+    ByteReader *byteReader = createByteReader(method->codeData, method->codeLength, 0);
+    StackFrame *stackFrame = createStackFrame(thread, method, byteReader);
+	
     thread->pushStackFrame(thread, stackFrame);
 	LocalVariables *localVariables = stackFrame->localVariables;
 
@@ -55,8 +56,8 @@ static void startThread(Thread* thread, Method *method) {
 		Instruction *instruction = getInstructionByCode(operCode);
 
 		printf("PC:%02d %s\n", pc, instruction->name);
-		instruction->fetcher(byteReader, stackFrame);
-		instruction->processor(stackFrame);
+		instruction->fetcher(instruction, byteReader);
+		instruction->processor(instruction, stackFrame);
 
 		u32 i=0;
 		for (i=0;i<localVariables->slotDataCount;++i) {

@@ -2,9 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <math.h>
 
 #include "../common/constants.h"
 #include "../common/commonType.h"
+
+#include "utils.h"
 
 bool isEquals(const char* str1, const char* str2) {
     int len1 = strlen(str1);
@@ -75,4 +78,16 @@ int indexOfString(const char* source, u32 start, char letter) {
         }
     }
     return -1;
+}
+
+bool isEqualFloatNum(float num1, float num2) {
+    return isEqualDoubleNum(num1, num2);
+}
+
+bool isEqualDoubleNum(double num1, double num2) {
+    int difference = fabs(num1-num2);
+    if (difference<ZERO_NUM) {
+        return true;
+    }
+    return false;
 }

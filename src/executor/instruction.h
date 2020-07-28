@@ -1,40 +1,137 @@
 typedef struct StackFrame StackFrame;
 
-typedef bool (*Processor)(StackFrame *frame);
+typedef struct Instruction Instruction;
 
-typedef bool (*Fetcher)(ByteReader *reader, StackFrame *frame);
+typedef union OperandStore OperandStore;
 
-typedef struct CasePair {
+typedef struct BranchOperand BranchOperand;
 
-    int value;
+typedef struct Index8Operand Index8Operand;
 
-    u32  position;
+typedef struct Index16Operand Index16Operand;
 
-} CasePair;
+typedef struct BipushOperand BipushOperand;
 
-typedef struct TableSwitch {
+typedef struct SipushOperand SipushOperand;
 
-    int caseMin;
+typedef struct WideOperand WideOperand;
 
-    int caseMax;
+typedef struct IIncOperand IIncOperand;
 
-    u32 defaultPos;
+typedef struct GotoWOperand GotoWOperand;
 
-    u32 pairCount;
+typedef struct RuntimeStack RuntimeStack;
 
-    CasePair *pairs;
+typedef struct NewArrayOperand NewArrayOperand;
 
-} TableSwitch;
+typedef struct TableSwitchOperand TableSwitchOperand;
 
-typedef struct LookupSwitch {
+typedef struct LookupSwitchOperand LookupSwitchOperand;
 
-    u32 defaultPos;
+typedef struct MultiANewArrayOperand MultiANewArrayOperand;
 
-    u32 pairCount;
+typedef struct InvokeInterfaceOperand InvokeInterfaceOperand;
 
-    CasePair *pairs;
+struct BranchOperand {
+    int offset;
+};
 
-} LookupSwitch;
+struct Index8Operand {
+    u32 index;
+};
+
+struct Index16Operand {
+    u32 index;
+};
+
+struct BipushOperand {
+    byte value;
+};
+
+struct SipushOperand {
+    short value;
+};
+
+struct WideOperand {
+
+    Instruction *instruction;
+};
+
+struct IIncOperand {
+    u32 index;
+
+    int constValue;
+};
+
+struct GotoWOperand {
+    int offset;
+};
+
+struct NewArrayOperand {
+    u8 atype;
+};
+
+struct LookupSwitchOperand {
+    
+    int defaultOffset;
+
+    int npairs;
+
+    int *matchOffsets;
+};
+
+struct TableSwitchOperand {
+    
+    int defaultOffset;
+
+    int low;
+
+    int high;
+
+    int *jumpOffsets;
+};
+
+struct MultiANewArrayOperand {
+
+    u16 index;
+
+    u8 dimensions;
+};
+
+struct InvokeInterfaceOperand {
+    u32 index;
+};
+
+union OperandStore {
+
+    BranchOperand branchOperand;
+
+    Index8Operand index8Operand;
+
+    Index16Operand index16Operand;
+
+    BipushOperand bipushOperand;
+
+    SipushOperand sipushOperand;
+
+    IIncOperand iincOperand;
+
+    WideOperand wideOperand;
+
+    GotoWOperand gotoWOperand;
+
+    NewArrayOperand newArrayOperand;
+
+    TableSwitchOperand tableSwitchOperand;
+
+    LookupSwitchOperand lookupSwitchOperand;
+
+    InvokeInterfaceOperand invokeInterfaceOperand;
+};
+
+typedef bool (*Processor)(Instruction *instruction, StackFrame *frame);
+
+typedef bool (*Fetcher)(Instruction *instruction, ByteReader *byteReader);
 
 typedef struct Instruction {
 
@@ -42,31 +139,11 @@ typedef struct Instruction {
 	   
     char *name;
 
-    union {
-
-        u8 u8operand;
-
-        u16 u16operand;
-
-        u32 u32operand;
-
-        u64 u64operand;
-
-        TableSwitch  tableSwitch;
-
-        LookupSwitch lookupSwitch;
-
-    } operand;
+    OperandStore operandStore;
      
-    u8 tag;			      
-
-    u16 length;
-
     Processor processor;
 
     Fetcher fetcher;
-
-    u8 reserve;
 
 } Instruction;
 

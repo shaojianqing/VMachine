@@ -9,6 +9,8 @@ typedef struct Argument Argument;
 extern VMachine *vmachine;
 
 struct VMachine {
+
+    ArrayList *classListPool;
     
     HashMap *runtimeClassPool;
 
@@ -25,6 +27,8 @@ struct VMachine {
     void (*initClassFromRuntimeJarFile)(VMachine *this);
 
     void (*initClassFromUserDefineJarFile)(VMachine *this, char *filename);
+
+    void (*linkClassPoolConfig)(VMachine *this);
 };
 
 VMachine* buildVMachine();
