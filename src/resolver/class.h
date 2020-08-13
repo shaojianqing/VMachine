@@ -278,8 +278,6 @@ struct Class {
 
 	u32 instanceSlotDataCount;
 
-	u32 staticSlotDataCount;
-
 	ConstPool* (*getConstant)(Class *this, u32 index);
 
 	Field* (*findField)(Class *this, char *fieldName);
