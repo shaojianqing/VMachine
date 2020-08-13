@@ -276,6 +276,10 @@ struct Class {
 
 	Class **interfaces;
 
+	u32 instanceSlotDataCount;
+
+	u32 staticSlotDataCount;
+
 	ConstPool* (*getConstant)(Class *this, u32 index);
 
 	Field* (*findField)(Class *this, char *fieldName);
@@ -287,6 +291,8 @@ struct Class {
 	bool (*isSubClassOf)(Class *this, Class *super);
 
 	bool (*isSuperClassOf)(Class *this, Class *subclass);
+
+	void (*calculateClassSlot)(Class *this);
 };
 
 Class* loadClassFromFile(char *filename);

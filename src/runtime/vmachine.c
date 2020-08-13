@@ -127,6 +127,8 @@ static void initClassFromJarFile(HashMap *classPool, ArrayList *classList, char 
 
 			if (isEndWith(filename, ".class")) {
 				Class *class = defineClass(mem);
+				class->calculateClassSlot(class);
+				
 				classPool->put(classPool, class->className, class);
 				classList->add(classList, class);
 			}

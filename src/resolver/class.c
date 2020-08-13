@@ -25,6 +25,8 @@ static Method* findMethod(Class *this, char *methodName, char *descriptor);
 
 static Method* findMainMethod(Class *this);
 
+static void calculateClassSlot(Class *this);
+
 static void resolveClassData(Class *class, byte *data);
 
 Class* loadClassFromFile(char *filename) {
@@ -60,11 +62,16 @@ Class* defineClass(byte* classData) {
 	return NULL;
 }
 
+void prepareClass(Class *this) {
+
+}
+
 static void initFuncations(Class *class) {
 	class->getConstant = getConstant;
 	class->findField = findField;
 	class->findMethod = findMethod;
 	class->findMainMethod = findMainMethod;
+	class->calculateClassSlot = calculateClassSlot;
 }
 
 static ConstPool* getConstant(Class *this, u32 index) {
@@ -483,7 +490,6 @@ static void resolveClassData(Class *class, byte *data) {
 				constant = constPool[attributeNameIndex];
 				constUtf8Info = (ConstUtf8Info *)constant.value;
 				class->attributeList[i].attributeName = constUtf8Info->bytes;
-
 				class->attributeList[i].attributeLength = swapU32(*(u32*)data);
 				data += sizeof(u32);
 
@@ -494,11 +500,35 @@ static void resolveClassData(Class *class, byte *data) {
 					for (m=0;m<attributeLength;m++) {
 						class->attributeList[i].data[m] = *(byte*)data;
 						data += sizeof(byte);				
-					}		
+					}
 				}
-			}		
+			}
 		}
 	}
+}
+
+static void calculateClassSlot(Class *this) {
+	
+	int i = 0;
+	u32 staticSlotDataCount = 0;
+	u32 instanceSlotDataCount = 0;
+
+	if (this->superClass!=NULL) {
+		instanceSlotDataCount = this->superClass->instanceSlotDataCount;
+	}
+
+	for (i = 0; i<this->fieldCount; ++i) {
+		if (isStatic(this->fieldList[i].accessFlags)) {
+			this->fieldList[i].slotId = staticSlotDataCount;
+			staticSlotDataCount++;
+		} else {
+			this->fieldList[i].slotId = instanceSlotDataCount;
+			instanceSlotDataCount++;
+		}
+	}
+
+	this->staticSlotDataCount = staticSlotDataCount;
+	this->instanceSlotDataCount = instanceSlotDataCount;
 }
 
 bool isPublic(u16 accessFlags) {

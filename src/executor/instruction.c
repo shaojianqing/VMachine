@@ -1204,6 +1204,10 @@ static bool istoreProcess(StackFrame *frame, u32 index) {
     OperandStack *operandStack = frame->operandStack;
     int value = operandStack->popInt(operandStack);
 
+    if (index == 2) {
+        printf("The result is:%d\n", value);
+    }
+
     LocalVariables *localVariables = frame->localVariables;
     localVariables->setInt(localVariables, index, value);
     return true;
@@ -1870,7 +1874,7 @@ static bool i2lProcessor(Instruction *instruction, StackFrame *frame) {
 static bool i2fProcessor(Instruction *instruction, StackFrame *frame) {
     OperandStack *operandStack = frame->operandStack;
     int intValue = operandStack->popInt(operandStack);
-    float floatValue = (double)intValue;
+    float floatValue = (float)intValue;
     operandStack->pushFloat(operandStack, floatValue);
     return true;
 }
@@ -2275,14 +2279,139 @@ static bool putStaticProcessor(Instruction *instruction, StackFrame *frame) {
 }
 
 static bool getFieldProcessor(Instruction *instruction, StackFrame *frame) {
+
+    ConstPool *constPool;
+    ConstUtf8Info* constUtf8Info;
+    ConstClassInfo* constClassInfo;
+    ConstFieldRefInfo *constFieldRefInfo;
+    ConstNameAndTypeInfo* constNameAndTypeInfo;
+
+    Class *class = frame->method->class;
+    u16 index = instruction->operandStore.index16Operand.index;
+    constPool = class->getConstant(class, index);
+    constFieldRefInfo = (ConstFieldRefInfo *)constPool->value;
+    u16 classIndex = constFieldRefInfo->classIndex;
+    u16 fieldIndex = constFieldRefInfo->nameAndTypeIndex;
+
+    constPool = class->getConstant(class, classIndex);
+    constClassInfo = (ConstClassInfo *)constPool->value;
+    constPool = class->getConstant(class, constClassInfo->nameIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *className = constUtf8Info->bytes;
+
+    constPool = class->getConstant(class, fieldIndex);
+    constNameAndTypeInfo = (ConstNameAndTypeInfo *)constPool->value;
+
+    u16 fieldNameIndex = constNameAndTypeInfo->nameIndex;
+    u16 fieldTypeIndex = constNameAndTypeInfo->descriptorIndex;
+
+    constPool = class->getConstant(class, fieldNameIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *fieldName = constUtf8Info->bytes;
+
+    constPool = class->getConstant(class, fieldTypeIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *fieldType = constUtf8Info->bytes;
+
+    Class *targetClass = vmachine->findClassByName(vmachine, className);
+    Field *targetField = targetClass->findField(targetClass, fieldName);
+
+    u32 slodId = targetField->slotId;
+    OperandStack *operandStack = frame->operandStack;
+    Instance *instance = (Instance *) operandStack->popReference(operandStack);
+
+    char type = fieldType[0];
+    if (type == 'Z' || type == 'B' || type == 'C' || type == 'S' || type == 'I') {
+        operandStack->pushInt(operandStack, getInteger(instance, slodId));
+    } else if (type == 'F') {
+        operandStack->pushFloat(operandStack, getFloat(instance, slodId));
+    } else if (type == 'J') {
+        operandStack->pushLong(operandStack, getLong(instance, slodId));
+    } else if (type == 'D') {
+        operandStack->pushDouble(operandStack, getDouble(instance, slodId));
+    } else if (type == 'L' || type == '[') {
+        operandStack->pushReference(operandStack, getReference(instance, slodId));
+    }
     return true;
 }
 
 static bool putFieldProcessor(Instruction *instruction, StackFrame *frame) {
+    ConstPool *constPool;
+    ConstUtf8Info* constUtf8Info;
+    ConstClassInfo* constClassInfo;
+    ConstFieldRefInfo *constFieldRefInfo;
+    ConstNameAndTypeInfo* constNameAndTypeInfo;
+
+    Class *class = frame->method->class;
+    u16 index = instruction->operandStore.index16Operand.index;
+    constPool = class->getConstant(class, index);
+    constFieldRefInfo = (ConstFieldRefInfo *)constPool->value;
+    u16 classIndex = constFieldRefInfo->classIndex;
+    u16 fieldIndex = constFieldRefInfo->nameAndTypeIndex;
+
+    constPool = class->getConstant(class, classIndex);
+    constClassInfo = (ConstClassInfo *)constPool->value;
+    constPool = class->getConstant(class, constClassInfo->nameIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *className = constUtf8Info->bytes;
+
+    printf("putFieldProcessor->className:%s\n", className);
+
+    constPool = class->getConstant(class, fieldIndex);
+    constNameAndTypeInfo = (ConstNameAndTypeInfo *)constPool->value;
+
+    u16 fieldNameIndex = constNameAndTypeInfo->nameIndex;
+    u16 fieldTypeIndex = constNameAndTypeInfo->descriptorIndex;
+
+    constPool = class->getConstant(class, fieldNameIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *fieldName = constUtf8Info->bytes;
+
+    printf("putFieldProcessor->fieldName:%s\n", fieldName);
+
+    constPool = class->getConstant(class, fieldTypeIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *fieldType = constUtf8Info->bytes;
+
+    printf("putFieldProcessor->fieldType:%s\n", fieldType);
+
+    Class *targetClass = vmachine->findClassByName(vmachine, className);
+    Field *targetField = targetClass->findField(targetClass, fieldName);
+
+    u32 slodId = targetField->slotId;
+
+    printf("putFieldProcessor->targetField->slotId:%d\n", slodId);
+
+    OperandStack *operandStack = frame->operandStack;
+    char type = fieldType[0];
+
+    printf("putFieldProcessor->type:%c\n", type);
+
+    if (type == 'Z' || type == 'B' || type == 'C' || type == 'S' || type == 'I') {
+        int intValue = operandStack->popInt(operandStack);
+        Instance *instance = (Instance *) operandStack->popReference(operandStack);
+        setInteger(instance, slodId, intValue);
+    } else if (type == 'F') {
+        float floatValue = operandStack->popFloat(operandStack);
+        Instance *instance = (Instance *) operandStack->popReference(operandStack);
+        setFloat(instance, slodId, floatValue);
+    } else if (type == 'J') {
+        long longValue = operandStack->popLong(operandStack);
+        Instance *instance = (Instance *) operandStack->popReference(operandStack);
+        setLong(instance, slodId, longValue);
+    } else if (type == 'D') {
+        double doubleValue = operandStack->popDouble(operandStack);
+        Instance *instance = (Instance *) operandStack->popReference(operandStack);
+        setDouble(instance, slodId, doubleValue);
+    } else if (type == 'L' || type == '[') {
+        void* reference = operandStack->popReference(operandStack);
+        Instance *instance = (Instance *) operandStack->popReference(operandStack);
+        setReference(instance, slodId, reference);
+    }
     return true;
 }
 
-static bool invokeMethodProcess(Thread *thread, StackFrame *stackFrame, Method *method) {
+static bool invokeMethodProcess(Thread *thread, StackFrame *stackFrame, Method *method, bool isStatic) {
     ByteReader *byteReader = createByteReader(method->codeData, method->codeLength, 0);
 	StackFrame *newStackFrame = createStackFrame(thread, method, byteReader);
 	
@@ -2293,8 +2422,15 @@ static bool invokeMethodProcess(Thread *thread, StackFrame *stackFrame, Method *
     OperandStack *operandStack = stackFrame->operandStack;
     LocalVariables *newLocalVariables = newStackFrame->localVariables;
 
+    //instance method, param includes this pointer
+    u32 paramLimit = descriptor->paramTypeCount;
+    if (isStatic) {
+        //static method, param not includes this pointer
+        paramLimit = descriptor->paramTypeCount-1;
+    }
+
     int i = 0;
-    for (i=descriptor->paramTypeCount-1; i>=0; --i) {
+    for (i = paramLimit; i>=0; --i) {
         SlotData *slotData = operandStack->popSlotData(operandStack);
         newLocalVariables->setSlotData(newLocalVariables, i, slotData);
     }
@@ -2311,12 +2447,91 @@ static bool invokeMethodProcess(Thread *thread, StackFrame *stackFrame, Method *
 }
 
 static bool invokeVirtualProcessor(Instruction *instruction, StackFrame *frame) {
-    
 
+    ConstPool *constPool;
+    ConstUtf8Info *constUtf8Info;
+    ConstClassInfo *constClassInfo;
+    ConstMethodRefInfo *constMethodRefInfo;
+    ConstNameAndTypeInfo *constNameAndTypeInfo;
+
+    u16 index = instruction->operandStore.index16Operand.index;
+    Class *class = frame->method->class;
+    constPool = class->getConstant(class, index);
+    constMethodRefInfo = (ConstMethodRefInfo *)constPool->value;
+    u16 classIndex = constMethodRefInfo->classIndex;
+    u16 methodIndex = constMethodRefInfo->nameAndTypeIndex;
+
+    constPool = class->getConstant(class, classIndex);
+    constClassInfo = (ConstClassInfo *)constPool->value;
+    constPool = class->getConstant(class, constClassInfo->nameIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *className = constUtf8Info->bytes;
+
+    constPool = class->getConstant(class, methodIndex);
+    constNameAndTypeInfo = (ConstNameAndTypeInfo *)constPool->value;
+
+    u16 methodNameIndex = constNameAndTypeInfo->nameIndex;
+    u16 methodTypeIndex = constNameAndTypeInfo->descriptorIndex;
+
+    constPool = class->getConstant(class, methodNameIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *methodName = constUtf8Info->bytes;
+
+    constPool = class->getConstant(class, methodTypeIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *methodType = constUtf8Info->bytes;
+    
+    Class *invokeClass = vmachine->findClassByName(vmachine, className);
+    Method *invokeMethod = class->findMethod(invokeClass, methodName, methodType);
+    Thread *thread = frame->thread;
+
+    invokeMethodProcess(thread, frame, invokeMethod, false);
     return true;
 }
 
 static bool invokeSpecialProcessor(Instruction *instruction, StackFrame *frame) {
+
+    ConstPool *constPool;
+    ConstUtf8Info *constUtf8Info;
+    ConstClassInfo *constClassInfo;
+    ConstMethodRefInfo *constMethodRefInfo;
+    ConstNameAndTypeInfo *constNameAndTypeInfo;
+
+    u16 index = instruction->operandStore.index16Operand.index;
+    Class *class = frame->method->class;
+    constPool = class->getConstant(class, index);
+    constMethodRefInfo = (ConstMethodRefInfo *)constPool->value;
+    u16 classIndex = constMethodRefInfo->classIndex;
+    u16 methodIndex = constMethodRefInfo->nameAndTypeIndex;
+
+    constPool = class->getConstant(class, classIndex);
+    constClassInfo = (ConstClassInfo *)constPool->value;
+    constPool = class->getConstant(class, constClassInfo->nameIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *className = constUtf8Info->bytes;
+
+    constPool = class->getConstant(class, methodIndex);
+    constNameAndTypeInfo = (ConstNameAndTypeInfo *)constPool->value;
+
+    u16 methodNameIndex = constNameAndTypeInfo->nameIndex;
+    u16 methodTypeIndex = constNameAndTypeInfo->descriptorIndex;
+
+    constPool = class->getConstant(class, methodNameIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *methodName = constUtf8Info->bytes;
+
+    constPool = class->getConstant(class, methodTypeIndex);
+    constUtf8Info = (ConstUtf8Info *)constPool->value;
+    char *methodType = constUtf8Info->bytes;
+
+    printf("invokeSpecialProcessor->methodName:%s\n", methodName);
+    printf("invokeSpecialProcessor->methodType:%s\n", methodType);
+    
+    Class *invokeClass = vmachine->findClassByName(vmachine, className);
+    Method *invokeMethod = class->findMethod(invokeClass, methodName, methodType);
+    Thread *thread = frame->thread;
+
+    invokeMethodProcess(thread, frame, invokeMethod, false);
     return true;
 }
 
@@ -2359,7 +2574,7 @@ static bool invokeStaticProcessor(Instruction *instruction, StackFrame *frame) {
     Method *invokeMethod = class->findMethod(invokeClass, methodName, methodType);
     Thread *thread = frame->thread;
 
-    invokeMethodProcess(thread, frame, invokeMethod);
+    invokeMethodProcess(thread, frame, invokeMethod, true);
     return true;
 }
 
@@ -2444,7 +2659,6 @@ static bool gotoWProcessor(Instruction *instruction, StackFrame *frame) {
 static bool jsrWProcessor(Instruction *instruction, StackFrame *frame) {
     return true;
 }
-
 
 static bool NoOperandFetcher(Instruction *instruction, ByteReader *byteReader) {
     return true;

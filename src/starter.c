@@ -43,9 +43,9 @@ int main(int argc, char **argv) {
 	vmachine->initMainEntryClass(vmachine, "com/sys/main/Main");
 	vmachine->startVMachine(vmachine);
 
-	Class *class = vmachine->findClassByName(vmachine, "java/util/HashMap");
+	//Class *class = vmachine->findClassByName(vmachine, "java/util/HashMap");
 
-	Class *step = class;
+	/*Class *step = class;
 	while (step!=NULL) {
 		printf("Class:%s->", step->className);
 		step = step->superClass;
@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 		printf("Interface:%s\n", class->interfaceNames[i]);
 	}
 
-	/*Class *class = vmachine->mainEntryClass;
+	Class *class = vmachine->mainEntryClass;
 	Method *mainMethod = class->findMainMethod(class);
 
 	MethodDescriptor *methodDescriptor = parseMethodDescriptor("([Lcom/sys/domain/UserInfo;Ljava/lang/String;IJDLjava/lang/String;)Lcom/sys/domain/UserInfo;");

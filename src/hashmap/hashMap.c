@@ -33,8 +33,7 @@ HashMap* createHashMap(HashCode hashCode, EqualFun equalFun, u32 capacity) {
 		if (map!=NULL) {
 			map->count = 0;
 			map->capacity = capacity;
-			map->table = malloc(sizeof(Entry *)*capacity);
-			memset(map->table, 0, sizeof(Entry *)*capacity);
+			map->table = calloc(1, sizeof(Entry *)*capacity);
 			map->limit = capacity*LIMIT_FACTOR;
 			map->printHashMap = printHashMap;
 			map->containsKey = containsKey;

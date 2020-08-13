@@ -62,7 +62,7 @@ static void startThread(Thread* thread, Method *method) {
 		u32 i=0;
 		for (i=0;i<localVariables->slotDataCount;++i) {
 			int value = localVariables->getInt(localVariables, i);
-			printf("	LocalVariables:%d\n", value);
+			printf("	LocalVariables:%u\n", value);
 		}
 	}
     printf("byteReader->pc:%d\n", byteReader->pc);
