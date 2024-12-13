@@ -80,9 +80,8 @@ static Object* get(HashMap *this, Object *key) {
 			}
 			entry = entry->next;		
 		}
-	} else {
-		return NULL;
 	}
+	return NULL;
 }
 
 static u32 getCount(HashMap *this) {
@@ -181,8 +180,8 @@ static u32 putInner(HashMap *this, Object *key, Object *value) {
 		entry->value = value;
 		entry->next = old;
 		this->table[index] = entry;
-		return STATUS_SUCCESS;
 	}
+	return STATUS_SUCCESS;
 }
 
 static void reBuildMap(HashMap *this, Entry **table, Entry *entry, u32 capacity) {

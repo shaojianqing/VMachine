@@ -78,6 +78,7 @@ static ConstPool* getConstant(Class *this, u32 index) {
 	if (this!=NULL) {
 		return &(this->constPool[index]);
 	}
+	return NULL;
 }
 
 static Field* findField(Class *this, char *fieldName) {

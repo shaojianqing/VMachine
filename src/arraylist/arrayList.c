@@ -113,6 +113,7 @@ static bool addInner(ArrayList *this, Object *object) {
 	u32 index = this->size;
 	this->list[index] = object;
 	this->size++;
+	return true;
 }
 
 static bool expandArrayList(ArrayList *this) {

@@ -276,6 +276,8 @@ struct Class {
 
 	Class **interfaces;
 
+	u32 staticSlotDataCount;
+
 	u32 instanceSlotDataCount;
 
 	ConstPool* (*getConstant)(Class *this, u32 index);
