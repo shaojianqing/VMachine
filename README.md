@@ -103,6 +103,20 @@ In JVM specification, method contains multiply attributes, and there is one kind
 
 ④ Finally the thread running loop calls the Processor function pointer to execute the instruction which may operate the operand stack or local variable table if necessary.
 
+|Seq|Item|Description|
+|:-- |:--------------- |:----------|:-------------------------------------------|
+|1|Class Definition|Class definition is parsed in the parsing engine, mainly serval parts are parsed including field list, method list and attribute list|
+|2|Method Definition|Method list is resolved and the most import part is the code data which is actually the byte code instructions inside the method here|
+|3|Thread Running Loop|This is the while loop fetching operation code and operands from the byte reader and executing the instructions sequentially. So this loop is actually the thread running body in JVM runtime|
+|4|ByteReader|ByteReader wraps the byte array and provides multiply access function to fetch and iterate byte data. In execution engine, ByteReader wraps the byte code instructions and the related operands, and in the Thread Running Loop, it provides the access functions for fetching byte code instructions and operands|
+|5|Instruction Table|This is the static instruction table defining all the byte code instructions which mainly container the operation code, operation name, operand data, instruction processor function pointer and operand fetcher function pointer. The byte code instruction execution mechanism is mainly implemented by the instruction processor function pointer|
+|6|Operate Code|This is a one-byte code defining the instruction. In JVM specification, all the instructions are defined by only one byte, and that is why the JVM instruction set is called as the byte code instruction|
+|7|Operate Name|This is the operate name which is the literal name of the instruction like "iadd", "iload" or "istore". This field makes it more convenient for us to understand and organize the instructions in the instruction table|
+|8|Operand Store|This is a union type that stores the operand temporarily. Usually this kind of operand comes from the fetcher function defined in the instruction data structure|
+|9|Processor|This is the main part of the instruction, as this function pointer is what the instruction really does when executing. This Processor function pointer takes instruction itself and stack frame as the necessary facilities. The detailed information will be described in the below part|
+|10|Fetcher|This is a utility function designed to fetch the operands from the byte reader and pass the operands to the operand store in the instruction temporarily. For most of the instructions, it is not necessary to fetch any operands, but for some specific instructions like xstore or xload, it is necessary to get the index as the operand|
+
+
 From the above diagram, it is clear to understand the general process of instruction execution mechanism here. When executing, the thread running loop fetches the byte code instruction and operands sequentially and frequently, and then calls the corresponding  processor function according to the different byte code instructions. Since JVM instruction is based on the stack rather than the register, the processor will frequently access or operate the operand stack data structure in the most of the instructions, while for some specific instructions, it is necessary to store or load some parameters in the local variables data structure. The detailed implementation is shown in the below part.
 
 As shown in the above code blocks, local variables is just some kind of array container that stores or loads data based on the array operation, so it is necessary to pass the index as the parameter. While operand stack is of course some kind of stack container that pushes or pops data always on the stack top, so it is totally not necessary to pass any kind of parameter to point out the position here. Actually, both local variables and operand stack are much important for instruction execution, they actually form the micro runtime environment which is called as stack frame in JVM runtime environment.
